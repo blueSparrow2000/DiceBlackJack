@@ -1,9 +1,4 @@
-import numpy as np
-import pygame
 import random
-
-from pygame.transform import threshold
-
 
 class DBJ():
     burst_num = 21
@@ -54,7 +49,7 @@ class DBJ():
 
         return self.get_observation(), reward, done
 
-    
+
 
 
 
