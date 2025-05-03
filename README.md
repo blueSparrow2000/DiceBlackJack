@@ -7,9 +7,8 @@ This project is based on python. Below are the packages that needs to be install
 
 
 pygame
-IPython
 matplotlib
-
+scipy
 
 ## Sample run
 

@@ -1,11 +1,20 @@
 import random
+from variables import *
 
 class DBJ():
     burst_num = 21
     def __init__(self):
-        self.player_hand=[]
-        self.dealer_hand=[]
-        self.dice=[i for i in range(6)]
+        self.actions = [0,1] # 0,1
+        self.states = [i for i in range(2,22)]# 2~21 valid states
+        self.dice = [i for i in range(6)]
+
+        self.player_hand=self.roll()
+        self.dealer_hand=self.roll()
+
+        self.verbose = False
+
+    def set_verbose(self):
+        self.verbose = True
 
     def compare(self,a,b):
         return float(a>b)-float(a<b)
@@ -26,8 +35,15 @@ class DBJ():
         return self.hand_score(self.player_hand)
 
     def reset(self):
-        self.player_hand=[]
-        self.dealer_hand=[]
+        self.player_hand=self.roll() # roll initially
+        self.dealer_hand=self.roll()
+        if self.verbose:
+            print("Reset")
+            print("Dealer: {:2d} | Player: {:2d}".format(self.sum_hand(self.dealer_hand),
+                                                               self.sum_hand(self.player_hand)))
+
+
+        return self.get_observation()
 
     '''
     action is expected to be 1 (hit) or 0 (stand)
@@ -47,8 +63,12 @@ class DBJ():
                 self.dealer_hand += self.roll()
             reward = self.compare(self.hand_score(self.player_hand), self.hand_score(self.dealer_hand))
 
-        return self.get_observation(), reward, done
+        if self.verbose:
+            print("Dealer: {:2d} | Player: {:2d} |Reward: {:.1f}".format(self.sum_hand(self.dealer_hand), self.sum_hand(self.player_hand),reward))
+            if done:
+                print("END episode\n")
 
+        return self.get_observation(), reward, done
 
 
 
