@@ -4,18 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="read">
-      <change afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/play.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/policy_holder.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/variables.py" afterDir="false" />
+    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="error on MC estimate corrected">
+      <change afterPath="$PROJECT_DIR$/agent.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user_interaction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.txt" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diceblackjack.py" beforeDir="false" afterPath="$PROJECT_DIR$/diceblackjack.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/plotting.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/MC_prediction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/variables.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,19 +49,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.diceblackjack.executor&quot;: &quot;Run&quot;,
-    &quot;Python.helper.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.plotting.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.MC_prediction.executor": "Run",
+    "Python.diceblackjack.executor": "Run",
+    "Python.helper.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.plotting.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.user_interaction.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/kingc/.spyder-py3/multi object gravity simulator/main.py",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -90,7 +89,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745932337992</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="error on MC estimate corrected">
+      <option name="closed" value="true" />
+      <created>1746271804346</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1746271804346</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -106,6 +113,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="read" />
-    <option name="LAST_COMMIT_MESSAGE" value="read" />
+    <MESSAGE value="error on MC estimate corrected" />
+    <option name="LAST_COMMIT_MESSAGE" value="error on MC estimate corrected" />
   </component>
 </project>

@@ -18,7 +18,7 @@ def rollout(policy, env, num_steps,restricted = False):
         action = policy.random() # policy.greedy(state,Q)
         if restricted:
             action = policy.restricted(state)
-        next_state, reward, done = env.step(action)
+        next_state, reward, done = env.train_step(action)
         episode.append([state,action,reward,next_state,done])
         if done:
             break
@@ -129,7 +129,6 @@ def compare_restricted_policies(env,num_ep=1000):
 
 # env.set_verbose()
 # mc_V(policy, env, num_ep = 10, graph = False,restricted=True)
-
 #mc_Q(policy, env, num_ep=100)
 
 compare_restricted_policies(env,num_ep=10000) # 이것도 17에서 멈춰야 하는듯
