@@ -4,13 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="error on MC estimate corrected">
-      <change afterPath="$PROJECT_DIR$/agent.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_interaction.py" afterDir="false" />
+    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="added player interaction">
+      <change afterPath="$PROJECT_DIR$/run_game.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MC_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_MC_prediction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diceblackjack.py" beforeDir="false" afterPath="$PROJECT_DIR$/diceblackjack.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/MC_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user_interaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_prompt_game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/variables.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -56,8 +58,12 @@
     "Python.helper.executor": "Run",
     "Python.main.executor": "Run",
     "Python.plotting.executor": "Run",
+    "Python.run_MC_prediction.executor": "Run",
+    "Python.run_game.executor": "Run",
+    "Python.run_prompt_game.executor": "Run",
     "Python.test.executor": "Run",
     "Python.user_interaction.executor": "Run",
+    "Python.util.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
@@ -97,7 +103,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746271804346</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="added player interaction">
+      <option name="closed" value="true" />
+      <created>1747225641303</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1747225641303</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -114,6 +128,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="read" />
     <MESSAGE value="error on MC estimate corrected" />
-    <option name="LAST_COMMIT_MESSAGE" value="error on MC estimate corrected" />
+    <MESSAGE value="added player interaction" />
+    <option name="LAST_COMMIT_MESSAGE" value="added player interaction" />
   </component>
 </project>

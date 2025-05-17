@@ -20,6 +20,10 @@ from plotting import *
 #
 # plot_Q(Q)
 
+#
+# Q = np.array([[1,1,1],[1,1,1]])
+# print(Q.shape)
 
-Q = np.array([[1,1,1],[1,1,1]])
-print(Q.shape)
+x = None
+if not x:
+    print('xx')

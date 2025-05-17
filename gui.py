@@ -8,9 +8,11 @@ move_ratio = [ratio_x, ratio_y]
 어중간하게 중간이면 이런식 [0.5,1]
 '''
 from util import *
+import random
+
 
 class Button():
-    def __init__(self, master, function_to_call, x,y, name, text_size=20,text_color = 'black', button_length=120, button_height=30, color = (150,150,150), hover_color = (80,80,80), move_ratio = [1,0]):
+    def __init__(self, master, function_to_call, x,y, name, text_size=20,text_color = 'black', button_length=120, button_height=30, color = (150,150,150), hover_color = (80,80,80), move_ratio = [0.5,1]):
         self.master = master # 버튼이 부를 함수가 정의되어있는 주인 클래스 (여기 안에서만 이 버튼이 정의되며 존재함)
         self.function_to_call = function_to_call # given by string
         self.x = x
@@ -272,30 +274,39 @@ class Selector():
 '''
 Read all content in specified image_folder and draws content of the same name 
 '''
-class Preview():
-    def __init__(self, x, y, name, image_folder, image_size = [200,200] , initiial_img_name = "",move_ratio = [0.5,0.5]):
+class DicePainter():
+    def __init__(self, x, y, name, image_size = [50,50] , initiial_dice = [0,0],move_ratio = [0.5,0.5]):
         self.x = x  # center coordinate
         self.y = y  # center coordinate
         self.image_size = image_size # fixed
         self.move_ratio = move_ratio
         self.name = name
-        self.image_folder = image_folder
+        self.image_folder = '/images/dice/'
         self.image_names = list()
-        self.image_dict = dict()
-        self.current_content = None # current image to draw
+        self.image_dict = [dict(),dict()]
+        self.dice_images = [] # current images to draw
+        self.all_images = [[],[]]
 
-        self.initialize(initiial_img_name)
+        self.initialize(initiial_dice)
 
     # initially download images
-    def initialize(self,initiial_img_name):
+    def initialize(self,dice_nums):
         self.image_names = self.read_all_image_names()
 
-        for img_name in self.image_names:
+        for img_name in self.image_names: # save two dices
             img = Image(self.x,self.y, "%s"%img_name ,folder = self.image_folder,size = self.image_size)
-            # 이미지 회전해서 넣기 (아케아처럼)
-            self.image_dict[img_name] = img
+            img.rot_center(-45)
+            img.move_image(-80,-20)
+            self.image_dict[0][img_name] = img
+            self.all_images[0].append(img)
 
-        self.change_content(initiial_img_name)
+            img = Image(self.x,self.y, "%s"%img_name ,folder = self.image_folder,size = self.image_size)
+            img.rot_center(10)
+            img.move_image(20, 0)
+            self.image_dict[1][img_name] = img
+            self.all_images[1].append(img)
+
+        self.change_content(dice_nums)
 
     def read_all_image_names(self):
         image_names = list(os.listdir(self.image_folder[1:]))
@@ -306,8 +317,13 @@ class Preview():
 
     # draw if current content is not None
     def draw(self,screen):
-        if self.current_content:
-            self.current_content.draw(screen)
+        for dice_img in self.dice_images:
+            dice_img.draw(screen)
+
+    def draw_random_dice(self,screen):
+        random_dice = [random.choice(self.all_images[0]),random.choice(self.all_images[1])]
+        for dice_img in random_dice:
+            dice_img.draw(screen)
 
     def move_to(self,dx,dy):
         # change my coord
@@ -316,17 +332,23 @@ class Preview():
         self.x += dx_motion
         self.y += dy_motion
         for img_name in self.image_names:
-            img_to_move = self.image_dict[img_name]
-            if img_to_move:
-                img_to_move.move_image(dx_motion,dy_motion)
+            for i in range(len(self.image_dict)):
+                img_to_move = self.image_dict[i][img_name]
+                if img_to_move:
+                    img_to_move.move_image(dx_motion,dy_motion)
 
     # if it is in jacket name list, use it. Otherwise, leave as None
-    def change_content(self,content_name):
-        if content_name in self.image_names:
-            self.current_content = self.image_dict[content_name]
+    def change_content(self,dice_nums):
+        if dice_nums: # non empty
+            self.dice_images = [None,None]
+            for i in range(len(dice_nums)):
+                dice_num = str(dice_nums[i])
+                if dice_num in self.image_names:
+                    self.dice_images[i] = self.image_dict[i][dice_num]
         else:
-            self.current_content = None
-            # print("no img named '{}' in the folder '{}'".format(content_name,self.image_folder) )
+            self.dice_images = []
+                # print("no img named '{}' in the folder '{}'".format(content_name,self.image_folder) )
+
 
 
 

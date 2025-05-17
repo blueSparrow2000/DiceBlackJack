@@ -1,6 +1,5 @@
-import random
+BLACK = (0,0,0)
 
-SEED = 0
-random.seed(SEED)
-
-SPEED = 30
+FPS = 30
+SLOWFPS = 30
+ANIMFPS = 20

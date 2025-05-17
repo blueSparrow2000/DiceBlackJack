@@ -1,6 +1,8 @@
 """
 
 """
+from sys import deactivate_stack_trampoline
+
 import pygame
 import os, sys
 import math
@@ -31,6 +33,9 @@ class Image():
         self.imageRect.center = (self.x, self.y)
         self.initialize()
 
+    def get_rect(self):
+        return self.imageRect # self.image.get_rect()
+
     def initialize(self):
         # resize
         self.resize_image(self.size)
@@ -59,6 +64,10 @@ class Image():
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
+    def rot_center(self, angle):
+        rotated_image = pygame.transform.rotate(self.image, angle)
+        self.image = rotated_image
+        self.imageRect = rotated_image.get_rect(center=self.imageRect.center)  # conserve previous center
 
 '''
 basic text box
@@ -66,15 +75,16 @@ basic text box
 
 
 class Text():
-    def __init__(self, x, y, content, size=20, color='darkturquoise', frames=100):  # color aqua
+    def __init__(self, x, y, content, size=20, color='darkturquoise', frames=100, bold = True):  # color aqua
         self.x = int(x)
         self.y = int(y)
         self.frames = frames
         self.size = size
         self.color = color
+        self.bold = bold
 
         self.content = content
-        self.font = pygame.font.SysFont('arial', size)
+        self.font = pygame.font.SysFont('arial', size, self.bold)
         self.text = self.font.render(self.content, True, self.color)
         # text.set_alpha(127)
         self.textRect = self.text.get_rect()
@@ -94,9 +104,12 @@ class Text():
     def get_content(self):
         return self.content
 
-    def change_content(self, content):
+    def change_content(self, content,new_color=None):
+        if not new_color:
+            new_color = self.color
+
         self.content = content
-        self.text = self.font.render(self.content, True, self.color)
+        self.text = self.font.render(self.content, True, new_color)
         self.textRect = self.text.get_rect()
         self.textRect.center = (self.x, self.y)
         # self.textRect.center = (self.x, self.y)
@@ -104,6 +117,12 @@ class Text():
     def write(self, screen):
         screen.blit(self.text, self.textRect)
 
+    def get_rect(self):
+        return self.textRect
+
+    def change_color(self, new_color):
+        self.color = new_color
+        self.change_content(self.get_content())
 
 '''
 write center-alligned multiple line text 
@@ -142,10 +161,71 @@ class MultiText():
             text_box.write(screen)
 
     def change_pos(self, x, y):
+        self.x = int(x)
+        self.y = int(y)
         cnt = 0
         for text_box in self.content_blocks:
             text_box.change_pos(x, y + cnt * (self.size + self.text_gap))
             cnt += 1
+
+
+class ScoreViewer():
+    def __init__(self, x, y, size=15, color=(120,120,120),light_color=(160,160,160), frames=100):  # color aqua
+        self.x = int(x)
+        self.y = int(y)
+        self.frames = frames
+        self.size = size
+        self.color = color
+        self.light_color = light_color
+
+        self.text_locations = [[self.x, self.y-40],[self.x, self.y-20],[self.x, self.y+20],[self.x, self.y+40]]
+        self.player_text = Text(self.text_locations[0][0],self.text_locations[0][1], "player", self.size, self.color,
+             self.frames,bold = True)
+        self.player_score = Text(self.text_locations[1][0],self.text_locations[1][1], "0", self.size+5, self.color,
+             self.frames,bold = True)
+        self.dealer_score = Text(self.text_locations[2][0],self.text_locations[2][1], "0", self.size+5, self.color,
+             self.frames,bold = True)
+        self.dealer_text = Text(self.text_locations[3][0],self.text_locations[3][1], "dealer", self.size, self.color,
+             self.frames,bold = True)
+
+        # string alligning process
+        self.content_blocks = [self.player_text,self.player_score,self.dealer_score,self.dealer_text]
+
+    def write(self, screen):
+        for text_box in self.content_blocks:
+            text_box.write(screen)
+
+    def change_pos(self, x, y):
+        self.x = int(x)
+        self.y = int(y)
+        self.text_locations = [[self.x, self.y-40],[self.x, self.y-20],[self.x, self.y+20],[self.x, self.y+40]]
+
+        for i in range(len(self.content_blocks)):
+            content = self.content_blocks[i]
+            content.change_pos(self.text_locations[i][0],self.text_locations[i][1])
+
+
+    def update_score_viewer_color(self, current_turn=""):
+        if current_turn == "player":  # change highlight color
+            self.player_text.change_color(self.light_color)
+            self.dealer_text.change_color(self.color)
+        elif current_turn == "dealer":
+            self.player_text.change_color(self.color)
+            self.dealer_text.change_color(self.light_color)
+        else: # reset color
+            self.player_text.change_color(self.color)
+            self.dealer_text.change_color(self.color)
+
+    def update_score_viewer(self,observation):
+        player_score, dealer_score = observation
+
+        self.player_score.change_content(str(player_score))
+        self.dealer_score.change_content(str(dealer_score))
+
+
+
+
+
 
 
 '''
