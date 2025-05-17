@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="result added">
+    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="Readme">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sound_effects/dice_roll_plastic.mp3" beforeDir="false" afterPath="$PROJECT_DIR$/sound_effects/dice_roll_plastic.mp3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +53,7 @@
   "keyToString": {
     "Python.MC_prediction.executor": "Run",
     "Python.diceblackjack.executor": "Run",
+    "Python.gui.executor": "Run",
     "Python.helper.executor": "Run",
     "Python.main.executor": "Run",
     "Python.plotting.executor": "Run",
@@ -127,7 +134,31 @@
       <option name="project" value="LOCAL" />
       <updated>1747487019311</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="size">
+      <option name="closed" value="true" />
+      <created>1747487273961</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1747487273961</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Readme">
+      <option name="closed" value="true" />
+      <created>1747487355927</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1747487355927</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Readme">
+      <option name="closed" value="true" />
+      <created>1747487452562</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1747487452562</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -148,6 +179,8 @@
     <MESSAGE value="Graphics are now available" />
     <MESSAGE value="Sample run added" />
     <MESSAGE value="result added" />
-    <option name="LAST_COMMIT_MESSAGE" value="result added" />
+    <MESSAGE value="size" />
+    <MESSAGE value="Readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="Readme" />
   </component>
 </project>

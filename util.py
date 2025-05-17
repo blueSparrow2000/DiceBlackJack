@@ -41,9 +41,9 @@ class Image():
         self.resize_image(self.size)
 
         # # center_image
-        # image_height = self.size[0]
-        # image_width = self.size[1]
-        # self.imageRect = self.imageRect.move((image_width // 2, image_height // 2))
+        image_height = self.size[0]
+        image_width = self.size[1]
+        self.imageRect = self.imageRect.move((image_width // 2, image_height // 2))
 
     def center_image(self, x, y):
         self.x, self.y = x, y
@@ -68,6 +68,7 @@ class Image():
         rotated_image = pygame.transform.rotate(self.image, angle)
         self.image = rotated_image
         self.imageRect = rotated_image.get_rect(center=self.imageRect.center)  # conserve previous center
+
 
 '''
 basic text box
@@ -190,6 +191,10 @@ class ScoreViewer():
 
         # string alligning process
         self.content_blocks = [self.player_text,self.player_score,self.dealer_score,self.dealer_text]
+
+    def get_rect(self):
+        return [block.get_rect() for block in self.content_blocks]
+
 
     def write(self, screen):
         for text_box in self.content_blocks:

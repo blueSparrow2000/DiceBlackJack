@@ -286,8 +286,14 @@ class DicePainter():
         self.image_dict = [dict(),dict()]
         self.dice_images = [] # current images to draw
         self.all_images = [[],[]]
+        self.highlights = []
+
+        self.dice_type = ''#'ice'#''#'ice'
+
 
         self.initialize(initiial_dice)
+
+
 
     # initially download images
     def initialize(self,dice_nums):
@@ -306,12 +312,27 @@ class DicePainter():
             self.image_dict[1][img_name] = img
             self.all_images[1].append(img)
 
+        # highlights
+        h1 = Image(self.x, self.y, "highlight", folder=self.image_folder, size=self.image_size)
+        h1.rot_center(-45)
+        h1.move_image(-80, -20)
+        h2 = Image(self.x, self.y, "highlight", folder=self.image_folder, size=self.image_size)
+        h2.rot_center(10)
+        h2.move_image(20, 0)
+        self.highlights = [h1,h2]
+
         self.change_content(dice_nums)
 
     def read_all_image_names(self):
         image_names = list(os.listdir(self.image_folder[1:]))
         # remove '.png' part
         image_names = [system_name[:-4] for system_name in image_names]
+        if self.dice_type == '': # only numbers from 0, 1 to 6 are remained
+            image_names = list(filter(lambda x:x in [str(i) for i in range(7)], image_names))
+        elif self.dice_type == 'ice':
+            image_names = list(filter(lambda x: x in ["ice"+str(i) for i in range(7)], image_names))
+            print(image_names)
+
         # print(image_names)
         return image_names
 
@@ -337,21 +358,46 @@ class DicePainter():
                 if img_to_move:
                     img_to_move.move_image(dx_motion,dy_motion)
 
+        for h in self.highlights:
+            h.move_image(dx_motion,dy_motion)
+
     # if it is in jacket name list, use it. Otherwise, leave as None
     def change_content(self,dice_nums):
         if dice_nums: # non empty
             self.dice_images = [None,None]
             for i in range(len(dice_nums)):
                 dice_num = str(dice_nums[i])
-                if dice_num in self.image_names:
-                    self.dice_images[i] = self.image_dict[i][dice_num]
+                dice_name = self.dice_type + dice_num
+                if dice_name in self.image_names:
+                    self.dice_images[i] = self.image_dict[i][dice_name]
         else:
             self.dice_images = []
                 # print("no img named '{}' in the folder '{}'".format(content_name,self.image_folder) )
 
+    def check_point_inside(self,point):
+        collision = [dice.get_rect().collidepoint(point) for dice in self.dice_images]
+        return collision
 
+    def get_rect(self):
+        return [dice.get_rect() for dice in self.dice_images]
 
+    def get_dice_nums(self):
+        return [int(self.dice_images[i].filename[-1]) for i in range(2)]
 
+    def highlight(self,mousepos,screen):
+        for i in range(len(self.highlights)):
+            h = self.highlights[i].get_rect()
+            if h.collidepoint(mousepos):
+                self.highlights[i].draw(screen)
 
+    def break_sound(self):
+        if self.dice_type=='':
+            soundPlayer.play_sound_effect('break_wood')
+        elif self.dice_type=='ice':
+            soundPlayer.play_sound_effect('tit')
 
-
+    def roll_sound(self):
+        if self.dice_type=='':
+            soundPlayer.play_sound_effect('dice_roll')
+        elif self.dice_type=='ice':
+            soundPlayer.play_sound_effect('dice_roll_plastic')

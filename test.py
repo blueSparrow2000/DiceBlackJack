@@ -24,6 +24,5 @@ from plotting import *
 # Q = np.array([[1,1,1],[1,1,1]])
 # print(Q.shape)
 
-x = None
-if not x:
-    print('xx')
+x = [1,2]
+print(x+[3])

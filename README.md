@@ -61,10 +61,15 @@ TBU: RL agent
 2025.04.29 Initial dice black jack environment      
 2025.05.03 Error on MC estimate corrected      
 2025.05.14 Prompt interaction available       
-2025.05.17 Graphic is now available
+2025.05.17 Graphic is now available / Added ice dice
 
 
-TBU: RL agent
+TBU: 
+- RL agent
+- Breaker mode: Game Twist. You can break 'one' dice among two dices in a roll, once per game (except for last round) => then what's the winning strategy?      
+This twist is acceptable since the player always goes first, having a possibility of getting 'burst' which is an instant lost    
+This contributes to the house edge the most
+
 
 ## License
 Available for non-commercial use

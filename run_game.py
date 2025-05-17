@@ -23,6 +23,11 @@ class Simulator():
                                                pygame.RESIZABLE | pygame.SRCALPHA)  # pygame.display.set_mode((self.w, self.h), pygame.SRCALPHA)
         pygame.display.set_caption('Dice BlackJack')
 
+        self.mode_idx = 1
+        self.modes = ['vanilla', 'breaker']
+        self.current_mode = self.modes[self.mode_idx]
+        self.broke_dice = False
+
         # trace option
         self.transparent_screen = pygame.Surface((self.w, self.h))
         self.transparent_screen.fill((40, 40, 40))
@@ -54,6 +59,7 @@ class Simulator():
         self.game_end = False
         self.win = False
 
+
         # main text
         self.game_name =  Text(self.w // 2, min(self.h // 8, 100), "Dice Black Jack", size=40, color=(160, 160, 160))
 
@@ -75,9 +81,11 @@ class Simulator():
 
     def initialize_game(self):
         self.env.reset()
+        self.update_draw_dice(self.env.player_hand)
         self.score_viewer.update_score_viewer(self.env.get_hand_sums())
         self.game_end = False
         self.win = False
+        self.broke_dice = False
 
     def resize_window_updates(self):
         old_w, old_h = self.w, self.h
@@ -142,25 +150,25 @@ class Simulator():
     def update_draw_dice(self, roll):
         self.dice_painter.change_content(roll)
         self.dice_painter.draw(self.display)
-        pygame.display.update()
+        pygame.display.update(self.dice_painter.get_rect())
 
     def animate_roll(self,roll):
-        soundPlayer.play_sound_effect('dice_roll')
+        self.dice_painter.roll_sound()
         # animate only dice part (blit) : need to get rec to update blits
         frames = 10
         while frames>0:
             frames-=1
             self.dice_painter.draw_random_dice(self.display)
-            pygame.display.update()
+            pygame.display.update(self.dice_painter.get_rect())
             self.clock.tick(ANIMFPS)
 
         # assign text shower to show what number appeared
         self.update_draw_dice(roll)
         self.roll_sum_viewer.change_content(str(sum(roll)))
         self.roll_sum_viewer.write(self.display)
-        pygame.display.update()
+        pygame.display.update(self.dice_painter.get_rect()+[self.roll_sum_viewer.get_rect()])
         # short time sleep
-        self.safe_sleep(0.8)
+        self.safe_sleep(0.7)
 
     def safe_sleep(self, amount):
         pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
@@ -182,6 +190,35 @@ class Simulator():
     def quit(self):
         pygame.quit()
         return False  # force quit
+
+    def check_broke_dice(self):
+        return self.broke_dice
+
+    def break_dice(self, mousepos):
+        if self.check_broke_dice(): # already used breaking wood
+            return
+
+        if self.current_mode == 'breaker':
+            collision = self.dice_painter.check_point_inside(mousepos)
+            dice_nums = self.dice_painter.get_dice_nums()
+            for i in range(2):
+                if collision[i]:
+                    self.dice_painter.break_sound()
+
+                    self.broke_dice = True # now you cant break more dice
+
+                    # revert the value of player hand
+                    # print(self.env.player_hand)
+                    self.env.player_hand[i] -= dice_nums[i]
+                    # print(self.env.player_hand)
+                    # update score viewer
+                    self.score_viewer.update_score_viewer(self.env.get_hand_sums())
+                    # update dice painter
+                    self.dice_painter.change_content([dice_nums[x]*int(not collision[x]) for x in range(2)])
+                    # print(self.dice_painter.dice_images[0].filename)
+                    # print(self.dice_painter.dice_images[1].filename)
+
+
 
     def game_screen(self): # 2
         soundPlayer.play_sound_effect('confirm')
@@ -208,7 +245,7 @@ class Simulator():
                     self.turn_text.change_content(self.turn_names[1])
                     self.update_draw_dice(self.env.dealer_initial_roll)
                     self.animate_frame()
-                    self.safe_sleep(1.5)
+                    self.safe_sleep(1.4)
                     # dealer step
                     done = False
                     while not done:
@@ -229,6 +266,7 @@ class Simulator():
 
     def animate_frame(self):
         # 1. collect user input
+        mousepos = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -241,12 +279,21 @@ class Simulator():
             if event.type == pygame.MOUSEMOTION:
                 mousepos = pygame.mouse.get_pos()
                 self.button_function(self.game_buttons, 'hover_check', mousepos)
+
             if event.type == pygame.MOUSEBUTTONUP:  # 마우스를 뗼떼 실행됨
                 mousepos = pygame.mouse.get_pos()
-                if self.button_function(self.game_buttons, 'check_inside_button', mousepos):
-                    return self.button_function(self.game_buttons, 'on_click', mousepos) # 아무것도 리턴하지 않아야 함
+                if self.break_dice(mousepos):
+                    pass
+                else:
+                    if self.button_function(self.game_buttons, 'check_inside_button', mousepos):
+                        return self.button_function(self.game_buttons, 'on_click', mousepos) # 아무것도 리턴하지 않아야 함
 
         self.display.fill(BLACK)
+
+        if self.current_mode == 'breaker' and not self.check_broke_dice():
+            # print(self.check_broke_dice())
+            self.dice_painter.highlight(mousepos, self.display)
+
 
         self.turn_text.write(self.display)
 
