@@ -23,16 +23,16 @@ class Simulator():
                                                pygame.RESIZABLE | pygame.SRCALPHA)  # pygame.display.set_mode((self.w, self.h), pygame.SRCALPHA)
         pygame.display.set_caption('Dice BlackJack')
 
-        self.mode_idx = 1
-        self.modes = ['vanilla', 'breaker']
-        self.current_mode = self.modes[self.mode_idx]
+        self.mode_idx = 0
+        self.mode_dict = {'Normal':'Normal dice blackjack', 'Breaker':"Can break 'one' dice in a roll, once per game except the last round"}
+        self.modes = list(self.mode_dict.keys())
+        self.current_mode = [self.modes[self.mode_idx]]
         self.broke_dice = False
 
         # trace option
         self.transparent_screen = pygame.Surface((self.w, self.h))
         self.transparent_screen.fill((40, 40, 40))
         self.transparent_screen.set_alpha(100)  # 0: transparent / 255: opaque
-
 
         self.dice_painter = DicePainter(self.w // 2, self.h // 2, 'Dice', initiial_dice=[4,3])
         self.dice_painter.draw(self.display)
@@ -48,7 +48,7 @@ class Simulator():
         self.end_toggle_buttons = []
 
         self.main_click_buttons = [Button(self, 'quit', self.w//2, 7*self.h//8, 'quit', button_length=100,color = (60,60,60), hover_color = (100,100,100)),Button(self, 'game_screen', self.w//2, 3*self.h//4, 'play', button_length=100,color = (60,60,60), hover_color = (100,100,100))]
-        self.main_toggle_buttons = []
+        self.main_toggle_buttons = [ToggleButton(self, 'toggle_mode', self.w//2, self.h//2 + 50, 'Mode',toggle_variable = self.current_mode, toggle_text_dict = self.mode_dict,button_length=100, text_size=17,color = (60,60,60), hover_color = (100,100,100),move_ratio=[0.5,0.5])]
 
         self.main_buttons = self.main_click_buttons + self.main_toggle_buttons
         self.game_buttons = self.game_click_buttons + self.game_toggle_buttons
@@ -72,12 +72,17 @@ class Simulator():
         self.game_result_text = Text(self.w // 2, min(self.h // 8, 100), "You won", size=40, color=(180, 180, 180))
         self.replay_text = Text(self.w // 2, 3*self.h // 4, "Replay?", size=28, color=(150, 150, 150))
 
-
         # put all pause screen rects here! this includes interactable things like buttons! -> extract rects!
         self.end_screen_rects = [self.game_result_text.get_rect(),self.replay_text.get_rect()] # this is used to efficiently draw on pause screen
         for end_button in self.end_buttons+self.end_toggle_buttons:
             for item in end_button.get_all_rect():
                 self.end_screen_rects.insert(0, item)
+
+    def toggle_mode(self):
+        self.mode_idx += 1
+        if self.mode_idx == len(self.modes):
+            self.mode_idx = 0
+        self.current_mode[0] = self.modes[self.mode_idx]
 
     def initialize_game(self):
         self.env.reset()
@@ -180,11 +185,9 @@ class Simulator():
             self.game_end = True
 
     def yes(self):
-        soundPlayer.play_sound_effect('confirm')
         return True
 
     def no(self):
-        soundPlayer.play_sound_effect('confirm')
         return False
 
     def quit(self):
@@ -198,7 +201,7 @@ class Simulator():
         if self.check_broke_dice(): # already used breaking wood
             return
 
-        if self.current_mode == 'breaker':
+        if self.current_mode[0] == 'Breaker':
             collision = self.dice_painter.check_point_inside(mousepos)
             dice_nums = self.dice_painter.get_dice_nums()
             for i in range(2):
@@ -221,7 +224,7 @@ class Simulator():
 
 
     def game_screen(self): # 2
-        soundPlayer.play_sound_effect('confirm')
+        self.dice_painter.roll_sound()
         meta_run = True
         while meta_run:
             self.button_function(self.game_toggle_buttons, 'initialize')
@@ -263,6 +266,7 @@ class Simulator():
                 meta_run = self.game_end_screen()  # true여야 계속 게임 진행
                 pygame.mixer.unpause()
 
+        return True
 
     def animate_frame(self):
         # 1. collect user input
@@ -285,12 +289,12 @@ class Simulator():
                 if self.break_dice(mousepos):
                     pass
                 else:
-                    if self.button_function(self.game_buttons, 'check_inside_button', mousepos):
-                        return self.button_function(self.game_buttons, 'on_click', mousepos) # 아무것도 리턴하지 않아야 함
+                    if self.button_function(self.game_click_buttons, 'check_inside_button', mousepos):
+                        return self.button_function(self.game_click_buttons, 'on_click', mousepos) # 아무것도 리턴하지 않아야 함
 
         self.display.fill(BLACK)
 
-        if self.current_mode == 'breaker' and not self.check_broke_dice():
+        if self.current_mode[0] == 'Breaker' and not self.check_broke_dice():
             # print(self.check_broke_dice())
             self.dice_painter.highlight(mousepos, self.display)
 
@@ -348,8 +352,8 @@ class Simulator():
                 if event.type == pygame.MOUSEBUTTONUP:  # 마우스를 뗼떼 실행됨
                     mousepos = pygame.mouse.get_pos()
                     self.button_function(self.end_toggle_buttons, 'on_click', mousepos) # toggle은 리턴값을 안씀
-                    if self.button_function(self.end_buttons, 'check_inside_button', mousepos):
-                        return self.button_function(self.end_buttons, 'on_click', mousepos) # False: main / True: Play again
+                    if self.button_function(self.end_click_buttons, 'check_inside_button', mousepos):
+                        return self.button_function(self.end_click_buttons, 'on_click', mousepos) # False: main / True: Play again
 
             self.button_function(self.end_buttons, 'draw_button', self.display)
             self.game_result_text.write(self.display)
@@ -384,9 +388,9 @@ class Simulator():
                 if event.type == pygame.MOUSEBUTTONUP:  # 마우스를 뗄때 실행됨
                     mousepos = pygame.mouse.get_pos()
                     self.button_function(self.main_toggle_buttons, 'on_click', mousepos) # toggle은 리턴값을 안씀
-                    if self.button_function(self.main_buttons, 'check_inside_button', mousepos):
+                    if self.button_function(self.main_click_buttons, 'check_inside_button', mousepos):
                         pygame.mixer.music.stop()
-                        return self.button_function(self.main_buttons, 'on_click', mousepos) # False: main / True: Play again
+                        return self.button_function(self.main_click_buttons, 'on_click', mousepos) # False: main / True: Play again
 
             self.display.fill(BLACK)
 

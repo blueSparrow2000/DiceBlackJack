@@ -88,7 +88,7 @@ class ToggleButton(Button):
         self.text_explanation_rect = None
 
         if self.toggle_text_dict:
-            self.explain_text_offset = [0 , self.text_size*2]
+            self.explain_text_offset = [0 , self.text_size*3//2]
             self.text_explanation = Text(self.x+self.explain_text_offset[0], self.y + self.explain_text_offset[1], self.get_explanation(), size=15, color='gray')
             self.text_explanation_rect = pygame.Rect((self.x -button_length//2 + self.explain_text_offset[0],self.y-button_height//2 + self.explain_text_offset[1]),(button_length,button_height))
 
