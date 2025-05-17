@@ -14,15 +14,23 @@ scipy
 
 ## Sample run
 - Main  menu       
-<img src="./sample_run/main.png" align="center">  
+<img src="./sample_run/main.png width="150" height="150" align="center">  
+
 - In game       
 <img src="./sample_run/in_game.png" align="center">  
 - End screen       
 <img src="./sample_run/result.png" align="center">
 - Monte carlo plot        
+
 Shows state value function with respect to each restricted policy     
-Restricted policy: hit if current state (cumulative dice sum) is less than restricted num        
+
+
+Restricted policy: hit if current state (cumulative dice sum) is less than restricted num     
+
+
 Darker region means player is likely to loose on that state
+
+
 <img src="./sample_run/MC_plot.png" align="center">  
 
 

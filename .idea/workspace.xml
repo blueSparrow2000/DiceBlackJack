@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="Graphics are now available">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="result added">
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -112,7 +111,23 @@
       <option name="project" value="LOCAL" />
       <updated>1747485594647</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Sample run added">
+      <option name="closed" value="true" />
+      <created>1747486876594</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1747486876594</updated>
+    </task>
+    <task id="LOCAL-00006" summary="result added">
+      <option name="closed" value="true" />
+      <created>1747487019311</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1747487019311</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -131,6 +146,8 @@
     <MESSAGE value="error on MC estimate corrected" />
     <MESSAGE value="added player interaction" />
     <MESSAGE value="Graphics are now available" />
-    <option name="LAST_COMMIT_MESSAGE" value="Graphics are now available" />
+    <MESSAGE value="Sample run added" />
+    <MESSAGE value="result added" />
+    <option name="LAST_COMMIT_MESSAGE" value="result added" />
   </component>
 </project>
