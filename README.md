@@ -14,12 +14,12 @@ scipy
 
 ## Sample run
 - Main  menu       
-<img src="./sample_run/main.png" width="200" height="200" align="center">  
+<img src="./sample_run/main.png" width="300" height="300" align="center">  
 
 - In game       
-<img src="./sample_run/in_game.png" width="200" height="200" align="center">  
+<img src="./sample_run/in_game.png" width="300" height="300" align="center">  
 - End screen       
-<img src="./sample_run/result.png" width="200" height="200" align="center">
+<img src="./sample_run/result.png" width="300" height="300" align="center">
 - Monte carlo plot        
 
 Shows state value function with respect to each restricted policy     
