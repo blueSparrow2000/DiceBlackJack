@@ -4,16 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="added player interaction">
-      <change afterPath="$PROJECT_DIR$/run_game.py" afterDir="false" />
+    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="Graphics are now available">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MC_prediction.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_MC_prediction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diceblackjack.py" beforeDir="false" afterPath="$PROJECT_DIR$/diceblackjack.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_interaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_prompt_game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/variables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +60,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/kingc/.spyder-py3/multi object gravity simulator/main.py",
+    "last_opened_file_path": "C:/Users/kingc/.spyder-py3/multi object gravity simulator/README.md",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
@@ -111,7 +104,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747225641303</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Graphics are now available">
+      <option name="closed" value="true" />
+      <created>1747485594647</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1747485594647</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -129,6 +130,7 @@
     <MESSAGE value="read" />
     <MESSAGE value="error on MC estimate corrected" />
     <MESSAGE value="added player interaction" />
-    <option name="LAST_COMMIT_MESSAGE" value="added player interaction" />
+    <MESSAGE value="Graphics are now available" />
+    <option name="LAST_COMMIT_MESSAGE" value="Graphics are now available" />
   </component>
 </project>
