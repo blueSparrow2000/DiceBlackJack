@@ -24,10 +24,11 @@ class Simulator():
         pygame.display.set_caption('Dice BlackJack')
 
         self.mode_idx = 0
-        self.mode_dict = {'Normal':'Normal dice blackjack', 'Breaker':"Can break 'one' dice in a roll, once per game except the last round"}
+        self.mode_dict = {'Normal':'Normal dice blackjack', 'Break':"Can break 'one' dice in a roll, once per game except the last round"}# 'Freeze':"Can freeze a dice, which is assured number next turn, once per game"
         self.modes = list(self.mode_dict.keys())
         self.current_mode = [self.modes[self.mode_idx]]
         self.broke_dice = False
+        self.froze_dice = False
 
         # trace option
         self.transparent_screen = pygame.Surface((self.w, self.h))
@@ -59,12 +60,11 @@ class Simulator():
         self.game_end = False
         self.win = False
 
-
         # main text
         self.game_name =  Text(self.w // 2, min(self.h // 8, 100), "Dice Black Jack", size=40, color=(160, 160, 160))
 
         # in game text
-        self.turn_names = ["Player's turn", "Dealer's turn"]
+        self.turn_names = ["Your turn", "Dealer's turn"]
         self.turn_text = Text(self.w // 2, min(self.h // 8, 100), self.turn_names[0], size=40, color=(160, 160, 160))
         self.roll_sum_viewer = Text(self.w // 2, self.h//2, "0", size=80, color="darkgoldenrod")
 
@@ -91,6 +91,9 @@ class Simulator():
         self.game_end = False
         self.win = False
         self.broke_dice = False
+        self.froze_dice = False
+
+        #self.dice_painter
 
     def resize_window_updates(self):
         old_w, old_h = self.w, self.h
@@ -197,11 +200,11 @@ class Simulator():
     def check_broke_dice(self):
         return self.broke_dice
 
-    def break_dice(self, mousepos):
-        if self.check_broke_dice(): # already used breaking wood
-            return
+    def check_froze_dice(self):
+        return self.froze_dice
 
-        if self.current_mode[0] == 'Breaker':
+    def interact_dice(self, mousepos):
+        if self.current_mode[0] == 'Break' and not self.check_broke_dice():
             collision = self.dice_painter.check_point_inside(mousepos)
             dice_nums = self.dice_painter.get_dice_nums()
             for i in range(2):
@@ -212,7 +215,8 @@ class Simulator():
 
                     # revert the value of player hand
                     # print(self.env.player_hand)
-                    self.env.player_hand[i] -= dice_nums[i]
+                    self.env.modify_player_hand(i, dice_nums[i])
+
                     # print(self.env.player_hand)
                     # update score viewer
                     self.score_viewer.update_score_viewer(self.env.get_hand_sums())
@@ -220,6 +224,9 @@ class Simulator():
                     self.dice_painter.change_content([dice_nums[x]*int(not collision[x]) for x in range(2)])
                     # print(self.dice_painter.dice_images[0].filename)
                     # print(self.dice_painter.dice_images[1].filename)
+
+        elif self.current_mode[0] == 'Freeze' and not self.check_froze_dice():
+            pass
 
 
 
@@ -241,18 +248,18 @@ class Simulator():
                     break
 
             if normal_game_end:
-                self.turn_text.change_content("")
-                self.animate_frame()
+                # self.turn_text.change_content("")
+                # self.animate_frame(click_available = False) # redraw
                 if not self.env.player_burst():# dealer turn -> if not player burst
                     # draw initial dealer's dice
                     self.turn_text.change_content(self.turn_names[1])
                     self.update_draw_dice(self.env.dealer_initial_roll)
-                    self.animate_frame()
+                    self.animate_frame(click_available = False)
                     self.safe_sleep(1.4)
                     # dealer step
                     done = False
                     while not done:
-                        self.animate_frame()
+                        self.animate_frame(click_available = False)
                         roll, done = self.env.dealer_step()
                         self.game_end_check(done)
                         if roll:
@@ -262,13 +269,13 @@ class Simulator():
                 # after game end
                 pygame.mixer.pause()
                 self.turn_text.change_content("")
-                self.animate_frame()
+                self.animate_frame(click_available = False) # redraw
                 meta_run = self.game_end_screen()  # true여야 계속 게임 진행
                 pygame.mixer.unpause()
 
         return True
 
-    def animate_frame(self):
+    def animate_frame(self, click_available = True):
         # 1. collect user input
         mousepos = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -284,20 +291,17 @@ class Simulator():
                 mousepos = pygame.mouse.get_pos()
                 self.button_function(self.game_buttons, 'hover_check', mousepos)
 
-            if event.type == pygame.MOUSEBUTTONUP:  # 마우스를 뗼떼 실행됨
+            if event.type == pygame.MOUSEBUTTONUP and click_available:  # 마우스를 뗼떼 실행됨
                 mousepos = pygame.mouse.get_pos()
-                if self.break_dice(mousepos):
-                    pass
-                else:
-                    if self.button_function(self.game_click_buttons, 'check_inside_button', mousepos):
-                        return self.button_function(self.game_click_buttons, 'on_click', mousepos) # 아무것도 리턴하지 않아야 함
+                self.interact_dice(mousepos)
+                if self.button_function(self.game_click_buttons, 'check_inside_button', mousepos):
+                    return self.button_function(self.game_click_buttons, 'on_click', mousepos) # 아무것도 리턴하지 않아야 함
 
         self.display.fill(BLACK)
 
-        if self.current_mode[0] == 'Breaker' and not self.check_broke_dice():
+        if (self.current_mode[0] == 'Break' and not self.check_broke_dice()) or (self.current_mode[0] == 'Freeze' and not self.check_froze_dice()) :
             # print(self.check_broke_dice())
             self.dice_painter.highlight(mousepos, self.display)
-
 
         self.turn_text.write(self.display)
 

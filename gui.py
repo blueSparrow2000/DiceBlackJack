@@ -271,6 +271,11 @@ class Selector():
             getattr(button, 'draw_button')(screen)
 
 
+class Dice():
+    def __init__(self, x, y, name, image_size = [50,50] , initiial_dice = [0,0],move_ratio = [0.5,0.5]):
+        pass
+
+
 '''
 Read all content in specified image_folder and draws content of the same name 
 '''
@@ -289,11 +294,7 @@ class DicePainter():
         self.highlights = []
 
         self.dice_type = ''#'ice'#''#'ice'
-
-
         self.initialize(initiial_dice)
-
-
 
     # initially download images
     def initialize(self,dice_nums):

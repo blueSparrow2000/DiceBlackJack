@@ -50,10 +50,12 @@ class DBJ():
     def get_hand_sums(self):
         return (self.sum_hand(self.player_hand),self.sum_hand(self.dealer_hand))
 
-
     def get_reward(self):
         return self.compare(self.hand_score(self.player_hand), self.hand_score(self.dealer_hand)) # -1: player lost / 0: Tie / 1: player win
 
+    def modify_player_hand(self, dice_index, amount):
+        # player hand is a list [ a, b ] of a: left dice's cumulative sum, b: right dice's cumulative sum
+        self.player_hand[dice_index] -= amount
 
     def reset(self):
         self.player_hand=self.roll() # roll initially

@@ -70,7 +70,7 @@ Breaker mode: Game Twist. You can break 'one' dice among two dices in a roll, on
 This twist is acceptable since the player always goes first, having a possibility of getting 'burst' which is an instant lost    
 This contributes to the house edge the most
 
-
+2025.05.18 Fixed bug: breaking dice on dealer's turn
 
 TBU: 
 - RL agent
