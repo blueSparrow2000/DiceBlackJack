@@ -94,7 +94,7 @@ class DBJ():
 
     def subtract_player_hand(self, amount):
         # player hand is a list of history of dice values
-        self.player_hand.append(amount)
+        self.player_hand.append(-amount)
         if self.verbose:
             print("subtracted {:2d} from player hand!".format(amount))
             print("Dealer: {:2d} | Player: {:2d}".format(self.sum_hand(self.dealer_hand),
