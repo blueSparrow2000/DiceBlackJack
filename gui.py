@@ -271,9 +271,179 @@ class Selector():
             getattr(button, 'draw_button')(screen)
 
 
+
+
+
+class DiceContainer():
+    def __init__(self, x, y, name, dice_types=['',''], image_size = [50,50] ,move_ratio = [0.5,0.5]):
+        self.x = x  # center coordinate
+        self.y = y  # center coordinate
+        self.image_size = image_size # fixed
+        self.move_ratio = move_ratio
+        self.name = name
+
+        self.dice_list = []
+        cnt=0
+        for dice_type in dice_types:
+            dice = Dice(self.x, self.y, self.name, type=dice_type,dice_index=cnt, image_size = self.image_size ,move_ratio = self.move_ratio)
+            self.dice_list.append(dice)
+            cnt+=1
+
+    def get_dice(self):
+        return self.dice_list
+
+    def call(self, function_name, *args):
+        result = []
+        for dice in self.dice_list:
+            if args:
+                if len(args)==1:
+                    result.append(getattr(dice, function_name)(args[0]))
+                elif len(args)==2:
+                    result.append(getattr(dice, function_name)(args[0],args[1]))
+                else:
+                    print("Arguement passed more than 3!")
+            else:
+                result.append(getattr(dice, function_name)())
+        return result
+
+    def change_type(self, new_type_list):
+        self.dice_list = []
+        cnt=0
+        for dice_type in new_type_list:
+            dice = Dice(self.x, self.y, self.name, type=dice_type,dice_index=cnt, image_size = self.image_size ,move_ratio = self.move_ratio)
+            self.dice_list.append(dice)
+            cnt+=1
+
+    def change_content(self,roll):
+        cnt=0
+        for d_num in roll:
+            self.dice_list[cnt].change_content(d_num)
+            cnt+=1
+
+
 class Dice():
-    def __init__(self, x, y, name, image_size = [50,50] , initiial_dice = [0,0],move_ratio = [0.5,0.5]):
-        pass
+    def __init__(self, x, y, name, type='',dice_index = 0, image_size = [50,50] ,move_ratio = [0.5,0.5]):
+        self.x = x  # center coordinate
+        self.y = y  # center coordinate
+        self.image_size = image_size # fixed
+        self.move_ratio = move_ratio
+        self.name = name
+        self.image_folder = '/images/dice/'
+        self.image_names = list()
+        self.image_dict = dict()
+        self.dice_image = None # current images to draw
+        self.all_images = []
+        self.highlight_img = None
+        self.dice_index = dice_index
+
+        self.dice_type = type
+        self.initialize()
+
+    # initially download images
+    def initialize(self,dice_num=1):
+        self.image_names = self.read_all_image_names()
+
+        for img_name in self.image_names: # save one dice
+            img = Image(self.x,self.y, "%s"%img_name ,folder = self.image_folder,size = self.image_size)
+            if self.dice_index==0:
+                img.rot_center(-45)
+                img.move_image(-80,-20)
+            elif self.dice_index==1:
+                img.rot_center(10)
+                img.move_image(20, 0)
+            else:
+                print("ERROR: Invalid dice index!")
+            self.image_dict[img_name] = img
+            self.all_images.append(img)
+
+        # highlights
+        h = Image(self.x, self.y, "highlight", folder=self.image_folder, size=self.image_size)
+        if self.dice_index == 0:
+            h.rot_center(-45)
+            h.move_image(-80, -20)
+        elif self.dice_index == 1:
+            h.rot_center(10)
+            h.move_image(20, 0)
+        else:
+            print("ERROR: Invalid dice index!")
+        self.highlight_img = h
+
+        self.change_content(dice_num)
+
+    def read_all_image_names(self):
+        image_names = list(os.listdir(self.image_folder[1:]))
+        # remove '.png' part
+        image_names = [system_name[:-4] for system_name in image_names]
+        if self.dice_type == '': # only numbers from 0, 1 to 6 are remained
+            image_names = list(filter(lambda x:x in [str(i) for i in range(7)], image_names))
+        elif self.dice_type == 'ice':
+            image_names = list(filter(lambda x: x in ["ice"+str(i) for i in range(7)], image_names))
+            print(image_names)
+
+        # print(image_names)
+        return image_names
+
+    # draw if current content is not None
+    def draw(self,screen):
+        if self.dice_image:
+            self.dice_image.draw(screen)
+
+    def draw_random_dice(self,screen):
+        random_dice = random.choice(self.all_images)
+        random_dice.draw(screen)
+
+    def move_to(self,delta):
+        (dx, dy) = delta
+        # change my coord
+        dx_motion = dx * self.move_ratio[0]
+        dy_motion = dy * self.move_ratio[1]
+        self.x += dx_motion
+        self.y += dy_motion
+        for img_name in self.image_names:
+            img_to_move = self.image_dict[img_name]
+            if img_to_move:
+                img_to_move.move_image(dx_motion,dy_motion)
+
+        self.highlight_img.move_image(dx_motion,dy_motion)
+
+    # if it is in jacket name list, use it. Otherwise, leave as None
+    def change_content(self,dice_num):
+        self.dice_image = None
+        if dice_num:
+            dice_num = str(dice_num)
+            dice_name = self.dice_type + dice_num
+            if dice_name in self.image_names:
+                self.dice_image = self.image_dict[dice_name]
+
+
+    def check_point_inside(self,point):
+        collision = self.dice_image.get_rect().collidepoint(point)
+        return collision
+
+    def get_rect(self):
+        if self.dice_image:
+            return self.dice_image.get_rect()
+
+    def get_dice_nums(self):
+        if self.dice_image:
+            return int(self.dice_image.filename[-1])
+
+    def highlight(self,mousepos, screen ):
+        h = self.highlight_img.get_rect()
+        if h.collidepoint(mousepos):
+            self.highlight_img.draw(screen)
+
+    def break_sound(self):
+        if self.dice_type=='':
+            soundPlayer.play_sound_effect('break_wood')
+        elif self.dice_type=='ice':
+            soundPlayer.play_sound_effect('tit')
+
+    def roll_sound(self):
+        if self.dice_type=='':
+            soundPlayer.play_sound_effect('dice_roll')
+        elif self.dice_type=='ice':
+            soundPlayer.play_sound_effect('dice_roll_plastic')
 
 
 '''

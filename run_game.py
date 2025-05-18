@@ -35,8 +35,11 @@ class Simulator():
         self.transparent_screen.fill((40, 40, 40))
         self.transparent_screen.set_alpha(100)  # 0: transparent / 255: opaque
 
-        self.dice_painter = DicePainter(self.w // 2, self.h // 2, 'Dice', initiial_dice=[4,3])
-        self.dice_painter.draw(self.display)
+
+        self.dice_container = DiceContainer(self.w // 2, self.h // 2, 'Dice',dice_types=['ice',''])
+
+        # self.dice_painter = DicePainter(self.w // 2, self.h // 2, 'Dice', initiial_dice=[4,3])
+        # self.dice_painter.draw(self.display)
         self.score_viewer = ScoreViewer(7*self.w // 8, self.h // 2)
 
         self.clock = pygame.time.Clock()
@@ -93,7 +96,6 @@ class Simulator():
         self.broke_dice = False
         self.froze_dice = False
 
-        #self.dice_painter
 
     def resize_window_updates(self):
         old_w, old_h = self.w, self.h
@@ -110,7 +112,8 @@ class Simulator():
             buttons.move_to(dx, dy)
 
         # 주사위 그림 이동
-        self.dice_painter.move_to(dx, dy)
+        # self.dice_painter.move_to(dx, dy)
+        self.dice_container.call('move_to',dx, dy)
 
         # score viewer 이동
         self.score_viewer.change_pos(7 * self.w // 8, self.h // 2)
@@ -156,25 +159,32 @@ class Simulator():
         self.score_viewer.update_score_viewer(self.env.get_hand_sums())
 
     def update_draw_dice(self, roll):
-        self.dice_painter.change_content(roll)
-        self.dice_painter.draw(self.display)
-        pygame.display.update(self.dice_painter.get_rect())
+        # self.dice_painter.change_content(roll)
+        # self.dice_painter.draw(self.display)
+        # pygame.display.update(self.dice_painter.get_rect())
+        self.dice_container.change_content(roll)
+        self.dice_container.call('draw', self.display)
+        pygame.display.update(self.dice_container.call('get_rect'))
 
     def animate_roll(self,roll):
-        self.dice_painter.roll_sound()
+        # self.dice_painter.roll_sound()
+        self.dice_container.call('roll_sound')
         # animate only dice part (blit) : need to get rec to update blits
         frames = 10
         while frames>0:
             frames-=1
-            self.dice_painter.draw_random_dice(self.display)
-            pygame.display.update(self.dice_painter.get_rect())
+            # self.dice_painter.draw_random_dice(self.display)
+            # pygame.display.update(self.dice_painter.get_rect())
+            self.dice_container.call('draw_random_dice', self.display)
+            pygame.display.update(self.dice_container.call('get_rect'))
             self.clock.tick(ANIMFPS)
 
         # assign text shower to show what number appeared
         self.update_draw_dice(roll)
         self.roll_sum_viewer.change_content(str(sum(roll)))
         self.roll_sum_viewer.write(self.display)
-        pygame.display.update(self.dice_painter.get_rect()+[self.roll_sum_viewer.get_rect()])
+        # pygame.display.update(self.dice_painter.get_rect()+[self.roll_sum_viewer.get_rect()])
+        pygame.display.update(self.dice_container.call('get_rect') + [self.roll_sum_viewer.get_rect()])
         # short time sleep
         self.safe_sleep(0.7)
 
@@ -204,34 +214,36 @@ class Simulator():
         return self.froze_dice
 
     def interact_dice(self, mousepos):
-        if self.current_mode[0] == 'Break' and not self.check_broke_dice():
-            collision = self.dice_painter.check_point_inside(mousepos)
-            dice_nums = self.dice_painter.get_dice_nums()
-            for i in range(2):
-                if collision[i]:
-                    self.dice_painter.break_sound()
-
-                    self.broke_dice = True # now you cant break more dice
-
-                    # revert the value of player hand
-                    # print(self.env.player_hand)
-                    self.env.modify_player_hand(i, dice_nums[i])
-
-                    # print(self.env.player_hand)
-                    # update score viewer
-                    self.score_viewer.update_score_viewer(self.env.get_hand_sums())
-                    # update dice painter
-                    self.dice_painter.change_content([dice_nums[x]*int(not collision[x]) for x in range(2)])
-                    # print(self.dice_painter.dice_images[0].filename)
-                    # print(self.dice_painter.dice_images[1].filename)
-
-        elif self.current_mode[0] == 'Freeze' and not self.check_froze_dice():
-            pass
+        return
+        # if self.current_mode[0] == 'Break' and not self.check_broke_dice():
+        #     collision = self.dice_painter.check_point_inside(mousepos)
+        #     dice_nums = self.dice_painter.get_dice_nums()
+        #     for i in range(2):
+        #         if collision[i]:
+        #             self.dice_painter.break_sound()
+        #
+        #             self.broke_dice = True # now you cant break more dice
+        #
+        #             # revert the value of player hand
+        #             # print(self.env.player_hand)
+        #             self.env.modify_player_hand(i, dice_nums[i])
+        #
+        #             # print(self.env.player_hand)
+        #             # update score viewer
+        #             self.score_viewer.update_score_viewer(self.env.get_hand_sums())
+        #             # update dice painter
+        #             self.dice_painter.change_content([dice_nums[x]*int(not collision[x]) for x in range(2)])
+        #             # print(self.dice_painter.dice_images[0].filename)
+        #             # print(self.dice_painter.dice_images[1].filename)
+        #
+        # elif self.current_mode[0] == 'Freeze' and not self.check_froze_dice():
+        #     pass
 
 
 
     def game_screen(self): # 2
-        self.dice_painter.roll_sound()
+        # self.dice_painter.roll_sound()
+        self.dice_container.call('roll_sound')
         meta_run = True
         while meta_run:
             self.button_function(self.game_toggle_buttons, 'initialize')
@@ -300,12 +312,13 @@ class Simulator():
         self.display.fill(BLACK)
 
         if (self.current_mode[0] == 'Break' and not self.check_broke_dice()) or (self.current_mode[0] == 'Freeze' and not self.check_froze_dice()) :
-            # print(self.check_broke_dice())
-            self.dice_painter.highlight(mousepos, self.display)
+            # self.dice_painter.highlight(mousepos, self.display)
+            self.dice_container.call('highlight', mousepos, self.display)
 
         self.turn_text.write(self.display)
 
-        self.dice_painter.draw(self.display)
+        # self.dice_painter.draw(self.display)
+        self.dice_container.call('draw', self.display)
         self.button_function(self.game_buttons, 'draw_button', self.display)
 
         self.score_viewer.write(self.display)

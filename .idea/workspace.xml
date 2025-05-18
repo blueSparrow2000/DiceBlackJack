@@ -4,19 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="- Changable mode: Normal and Breaker mode">
+    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="Fixed bug: breaking dice on dealer's turn">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diceblackjack.py" beforeDir="false" afterPath="$PROJECT_DIR$/diceblackjack.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/lazer.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/long gas pitch low.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/long gas.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/out of gas.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/railgun_reload.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/rotate gas.mp3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/thrust.mp3" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -179,7 +170,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747499699097</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Fixed bug: breaking dice on dealer's turn">
+      <option name="closed" value="true" />
+      <created>1747558740956</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1747558740956</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -204,6 +203,7 @@
     <MESSAGE value="Readme" />
     <MESSAGE value="- Highlight bug fix&#10;- Added ice dice" />
     <MESSAGE value="- Changable mode: Normal and Breaker mode" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Changable mode: Normal and Breaker mode" />
+    <MESSAGE value="Fixed bug: breaking dice on dealer's turn" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bug: breaking dice on dealer's turn" />
   </component>
 </project>
