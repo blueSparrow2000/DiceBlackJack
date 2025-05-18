@@ -65,14 +65,18 @@ TBU: RL agent
 2025.05.14 Prompt interaction available       
 
 2025.05.17 Graphic is now available      
-Added ice dice skin       
-Breaker mode: Game Twist. You can break 'one' dice among two dices in a roll, once per game (except for last round) => then what's the winning strategy?      
+Added wood, ice dice skin       
+Breaker mode: Game Twist. You can break 'one' die in a roll, once per game except the last round => then what's the winning strategy?      
 This twist is acceptable since the player always goes first, having a possibility of getting 'burst' which is an instant lost    
 This contributes to the house edge the most
 
 2025.05.18 Fixed bug: breaking dice on dealer's turn     
-Dice has image and its highlight, and its number is received from DBJ environment     
-Dice is contained in a dice container      
+Dice have image and its highlight, and its number is received from DBJ environment     
+Dice are contained in a dice container      
+Freeze mode: You can freeze a die to get guaranteed number next turn, once per game        
+Random mode: Use random dice combinations and its abilities!     
+Added aqua, dark, royal skin (their abilities are to be determined)
+
 
 TBU: 
 - RL agent

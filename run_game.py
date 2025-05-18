@@ -23,12 +23,12 @@ class Simulator():
                                                pygame.RESIZABLE | pygame.SRCALPHA)  # pygame.display.set_mode((self.w, self.h), pygame.SRCALPHA)
         pygame.display.set_caption('Dice BlackJack')
 
+        self.dice_types = ['','dark','ice','wood','aqua','royal']
         self.mode_idx = 0
-        self.mode_dict = {'Normal':'Normal dice blackjack', 'Break':"Can break 'one' dice in a roll, once per game except the last round"}# 'Freeze':"Can freeze a dice, which is assured number next turn, once per game"
+        self.mode_dict = {'Normal':'Normal dice blackjack', 'Break':"Can break 'one' die in a roll, once per game except the last round",'Freeze':"Can freeze a die to get guaranteed number next turn, once per game", 'Random':"Use random dice combinations and its abilities!"}#
         self.modes = list(self.mode_dict.keys())
         self.current_mode = [self.modes[self.mode_idx]]
-        self.broke_dice = False
-        self.froze_dice = False
+
 
         # trace option
         self.transparent_screen = pygame.Surface((self.w, self.h))
@@ -36,7 +36,7 @@ class Simulator():
         self.transparent_screen.set_alpha(100)  # 0: transparent / 255: opaque
 
 
-        self.dice_container = DiceContainer(self.w // 2, self.h // 2, 'Dice',dice_types=['ice',''])
+        self.dice_container = DiceContainer(self.w // 2, self.h // 2, 'Dice',dice_types=['',''])
 
         # self.dice_painter = DicePainter(self.w // 2, self.h // 2, 'Dice', initiial_dice=[4,3])
         # self.dice_painter.draw(self.display)
@@ -93,8 +93,8 @@ class Simulator():
         self.score_viewer.update_score_viewer(self.env.get_hand_sums())
         self.game_end = False
         self.win = False
-        self.broke_dice = False
-        self.froze_dice = False
+
+        self.dice_container.reset_dice()
 
 
     def resize_window_updates(self):
@@ -113,7 +113,7 @@ class Simulator():
 
         # 주사위 그림 이동
         # self.dice_painter.move_to(dx, dy)
-        self.dice_container.call('move_to',dx, dy)
+        self.dice_container.move_to(dx, dy)
 
         # score viewer 이동
         self.score_viewer.change_pos(7 * self.w // 8, self.h // 2)
@@ -178,7 +178,7 @@ class Simulator():
             self.dice_container.call('draw_random_dice', self.display)
             pygame.display.update(self.dice_container.call('get_rect'))
             self.clock.tick(ANIMFPS)
-
+        self.dice_container.end_random_roll()
         # assign text shower to show what number appeared
         self.update_draw_dice(roll)
         self.roll_sum_viewer.change_content(str(sum(roll)))
@@ -207,41 +207,27 @@ class Simulator():
         pygame.quit()
         return False  # force quit
 
-    def check_broke_dice(self):
-        return self.broke_dice
-
-    def check_froze_dice(self):
-        return self.froze_dice
-
     def interact_dice(self, mousepos):
-        return
-        # if self.current_mode[0] == 'Break' and not self.check_broke_dice():
-        #     collision = self.dice_painter.check_point_inside(mousepos)
-        #     dice_nums = self.dice_painter.get_dice_nums()
-        #     for i in range(2):
-        #         if collision[i]:
-        #             self.dice_painter.break_sound()
-        #
-        #             self.broke_dice = True # now you cant break more dice
-        #
-        #             # revert the value of player hand
-        #             # print(self.env.player_hand)
-        #             self.env.modify_player_hand(i, dice_nums[i])
-        #
-        #             # print(self.env.player_hand)
-        #             # update score viewer
-        #             self.score_viewer.update_score_viewer(self.env.get_hand_sums())
-        #             # update dice painter
-        #             self.dice_painter.change_content([dice_nums[x]*int(not collision[x]) for x in range(2)])
-        #             # print(self.dice_painter.dice_images[0].filename)
-        #             # print(self.dice_painter.dice_images[1].filename)
-        #
-        # elif self.current_mode[0] == 'Freeze' and not self.check_froze_dice():
-        #     pass
+        self.dice_container.interact_dice(mousepos,self.env)
+        self.score_viewer.update_score_viewer(self.env.get_hand_sums())
 
-
+    def set_dealer_turn(self):
+        self.env.set_dealer_turn()
+        self.dice_container.end_random_roll()
 
     def game_screen(self): # 2
+        if self.current_mode[0] == 'Freeze':
+            self.dice_container.change_type(['ice' for i in range(2)])
+        elif self.current_mode[0] == 'Break':
+            self.dice_container.change_type(['wood' for i in range(2)])
+        elif self.current_mode[0] == 'Normal':
+            self.dice_container.change_type(['' for i in range(2)])
+        elif self.current_mode[0] == 'Random':
+            # self.dice_container.change_type(['dark' for i in range(2)])
+            self.dice_container.change_type([random.choice(self.dice_types) for i in range(2)])
+        else:
+            pass
+
         # self.dice_painter.roll_sound()
         self.dice_container.call('roll_sound')
         meta_run = True
@@ -265,6 +251,7 @@ class Simulator():
                 if not self.env.player_burst():# dealer turn -> if not player burst
                     # draw initial dealer's dice
                     self.turn_text.change_content(self.turn_names[1])
+                    self.set_dealer_turn()
                     self.update_draw_dice(self.env.dealer_initial_roll)
                     self.animate_frame(click_available = False)
                     self.safe_sleep(1.4)
@@ -311,9 +298,8 @@ class Simulator():
 
         self.display.fill(BLACK)
 
-        if (self.current_mode[0] == 'Break' and not self.check_broke_dice()) or (self.current_mode[0] == 'Freeze' and not self.check_froze_dice()) :
-            # self.dice_painter.highlight(mousepos, self.display)
-            self.dice_container.call('highlight', mousepos, self.display)
+
+        self.dice_container.call('highlight', mousepos, self.display)
 
         self.turn_text.write(self.display)
 
@@ -333,12 +319,13 @@ class Simulator():
         pygame.display.flip()
         self.button_function(self.end_toggle_buttons, 'initialize')
 
+        reward = self.env.get_reward()
         # verify winner
-        if self.env.get_reward() > 0:
+        if reward > 0:
             # player win
             self.game_result_text.change_content("You won")
             soundPlayer.play_sound_effect('confirm')
-        elif self.env.get_reward() == 0:
+        elif reward == 0:
             # tie
             self.game_result_text.change_content("Tie")
             soundPlayer.play_sound_effect('shruff')

@@ -25,4 +25,5 @@ from plotting import *
 # print(Q.shape)
 
 x = [1,2]
-print(x+[3])
+z = [True,False]
+print([x[i]*z[i] for i in range(len(x))])
