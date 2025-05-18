@@ -9,6 +9,7 @@ class DBJ():
         self.dice = [i+1 for i in range(6)]
         self.last_roll = [0,0]
         self.freeze_hand_pos = [False,False]
+        self.player_protection = False
 
         self.player_hand=[0,0]
         self.dealer_initial_roll = [0,0]
@@ -17,6 +18,9 @@ class DBJ():
         self.verbose = False
 
         self.who_rolled = "player"
+
+    def set_player_protection(self):
+        self.player_protection = True
 
     def set_dealer_turn(self):
         self.who_rolled = "dealer"
@@ -28,12 +32,14 @@ class DBJ():
         if self.verbose:
             print("Set freeze")
 
-
     def set_verbose(self):
         self.verbose = True
 
     def compare(self,a,b):
         return float(a>b)-float(a<b)
+
+    def fast_roll(self): # used for training purpose
+        return [int(random.choice(self.dice)) for i in range(2)]
 
     def roll(self):
         roll = [int(random.choice(self.dice)) for i in range(2)]
@@ -86,9 +92,9 @@ class DBJ():
             print()
         return reward
 
-    def subtract_player_hand(self, dice_index, amount):
-        # player hand is a list [ a, b ] of a: left dice's cumulative sum, b: right dice's cumulative sum
-        self.player_hand[dice_index] -= amount
+    def subtract_player_hand(self, amount):
+        # player hand is a list of history of dice values
+        self.player_hand.append(amount)
         if self.verbose:
             print("subtracted {:2d} from player hand!".format(amount))
             print("Dealer: {:2d} | Player: {:2d}".format(self.sum_hand(self.dealer_hand),
@@ -98,6 +104,8 @@ class DBJ():
         if self.verbose:
             print("Reset")
         self.freeze_hand_pos = [False, False]
+        self.player_protection = False
+
         # roll initially
         self.who_rolled = "dealer"
         self.dealer_initial_roll = self.roll()
@@ -172,13 +180,23 @@ class DBJ():
     def player_step(self,action):
         reward=0
         done=False
+        burst_protected = False
         roll=[]
         if action: # hit
             roll = self.roll()
             self.player_hand += roll
             if self.player_burst():
-                done=True
-                reward=-1
+                if self.player_protection:
+                    # revert
+                    for i in range(2):
+                        self.player_hand.pop()
+                    self.player_protection = False # used only once
+                    burst_protected = True
+                    if self.verbose:
+                        print("Burst protected!")
+                else:
+                    done=True
+                    reward=-1
         else: # stand
             done = True
 
@@ -187,7 +205,7 @@ class DBJ():
             print("Dealer: {:2d} | Player: {:2d} |Reward: {:.1f}".format(self.get_dealer_hand(), self.get_player_hand(), reward))
             if done:
                 print("END {} turn\n".format(self.who_rolled))
-        return roll, done
+        return roll, done, burst_protected
 
     def get_dealer_action(self): # 나중에 NN으로부터 딜러 액션을 가져올수도 있다
         stop_dealer_hit_threshold = self.sum_hand(self.player_hand)
@@ -211,6 +229,6 @@ class DBJ():
             print("Dealer: {:2d} | Player: {:2d} |Reward: {:.1f}".format(self.get_dealer_hand(), self.get_player_hand(), reward))
             if done:
                 print("END {} turn\n".format(self.who_rolled))
-        return roll, done # not done
+        return roll, done, False # not done
         # self.get_reward()
 

@@ -73,9 +73,11 @@ This contributes to the house edge the most
 2025.05.18 Fixed bug: breaking dice on dealer's turn     
 Dice have image and its highlight, and its number is received from DBJ environment     
 Dice are contained in a dice container      
-Freeze mode: You can freeze a die to get guaranteed number next turn, once per game        
+Freeze mode: You can freeze a die to get guaranteed number next turn, once per game     
+Guarded mode: Added royal dice that protects player against burst, for once
 Random mode: Use random dice combinations and its abilities!     
-Added aqua, dark, royal skin (their abilities are to be determined)
+Added aqua, dark, royal skin (their abilities are to be determined)          
+
 
 
 TBU: 

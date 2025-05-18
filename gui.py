@@ -287,10 +287,10 @@ class DiceContainer():
         self.dice_list = []
         self.change_type(dice_types)
 
-    def reset_dice(self):
+    def reset_dice(self,env):
         self.interaction_dict = {'Break':False, 'Freeze':False}
         for dice in self.dice_list:
-            dice.reset_var()
+            dice.reset_var(env)
 
     def get_dice(self):
         return self.dice_list
@@ -382,7 +382,7 @@ class Dice():
 
         self.ability_used = False
 
-    def reset_var(self):
+    def reset_var(self,env):
         self.ability_used = False
 
     # initially download images
@@ -415,7 +415,6 @@ class Dice():
         self.highlight_img = h
 
         self.change_content(dice_num)
-        self.reset_var()
 
     def read_all_image_names(self):
         image_names = list(os.listdir(self.image_folder[1:]))
@@ -507,7 +506,7 @@ class WoodDice(Dice):
     def interact(self,point,env,interaction_list):
         if self.check_point_inside(point) and not interaction_list['Break']:#
             self.break_sound()
-            env.subtract_player_hand(self.dice_index, self.get_dice_num())
+            env.subtract_player_hand( self.get_dice_num())
             self.change_content(0) # break number to 0
             interaction_list['Break'] = True
             return True
@@ -529,6 +528,11 @@ class RoyalDice(Dice):
 
     def roll_sound(self):
         soundPlayer.play_sound_effect('dice_roll')
+
+    def reset_var(self,env):
+        self.ability_used = False
+        env.set_player_protection()
+
 
 class IceDice(Dice):
     def __init__(self, x, y, name, dice_index=0, image_size=[50, 50], move_ratio=[0.5, 0.5]):
