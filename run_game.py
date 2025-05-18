@@ -28,18 +28,13 @@ class Simulator():
         self.mode_dict = {'Normal':'Normal dice blackjack', 'Break':"Can break 'one' die in a roll, once per game except the last round",'Freeze':"Can freeze a die to get guaranteed number next turn, once per game", 'Random':"Use random dice combinations and its abilities!"}#
         self.modes = list(self.mode_dict.keys())
         self.current_mode = [self.modes[self.mode_idx]]
-
+        self.dice_container = DiceContainer(self.w // 2, self.h // 2, 'Dice',dice_types=['',''])
 
         # trace option
         self.transparent_screen = pygame.Surface((self.w, self.h))
         self.transparent_screen.fill((40, 40, 40))
         self.transparent_screen.set_alpha(100)  # 0: transparent / 255: opaque
 
-
-        self.dice_container = DiceContainer(self.w // 2, self.h // 2, 'Dice',dice_types=['',''])
-
-        # self.dice_painter = DicePainter(self.w // 2, self.h // 2, 'Dice', initiial_dice=[4,3])
-        # self.dice_painter.draw(self.display)
         self.score_viewer = ScoreViewer(7*self.w // 8, self.h // 2)
 
         self.clock = pygame.time.Clock()
@@ -51,8 +46,8 @@ class Simulator():
         self.end_click_buttons = [Button(self, 'yes', self.w//4, 7*self.h//8, 'yes', button_length=100,color = (80,80,80), hover_color = (120,120,120)),Button(self, 'no', 3*self.w//4, 7*self.h//8, 'no', button_length=100,color = (80,80,80), hover_color = (120,120,120))]
         self.end_toggle_buttons = []
 
-        self.main_click_buttons = [Button(self, 'quit', self.w//2, 7*self.h//8, 'quit', button_length=100,color = (60,60,60), hover_color = (100,100,100)),Button(self, 'game_screen', self.w//2, 3*self.h//4, 'play', button_length=100,color = (60,60,60), hover_color = (100,100,100))]
-        self.main_toggle_buttons = [ToggleButton(self, 'toggle_mode', self.w//2, self.h//2 + 50, 'Mode',toggle_variable = self.current_mode, toggle_text_dict = self.mode_dict,button_length=100, text_size=17,color = (60,60,60), hover_color = (100,100,100),move_ratio=[0.5,0.5])]
+        self.main_click_buttons = [Button(self, 'quit', self.w//2, 7*self.h//8, 'quit', button_length=120,color = (60,60,60), hover_color = (100,100,100)),Button(self, 'game_screen', self.w//2, 3*self.h//4, 'play', button_length=120,color = (60,60,60), hover_color = (100,100,100))]
+        self.main_toggle_buttons = [ToggleButton(self, 'toggle_mode', self.w//2, self.h//2 + 50, 'Mode',toggle_variable = self.current_mode, toggle_text_dict = self.mode_dict,button_length=120, text_size=17,color = (60,60,60), hover_color = (100,100,100),move_ratio=[0.5,0.5])]
 
         self.main_buttons = self.main_click_buttons + self.main_toggle_buttons
         self.game_buttons = self.game_click_buttons + self.game_toggle_buttons
@@ -69,7 +64,7 @@ class Simulator():
         # in game text
         self.turn_names = ["Your turn", "Dealer's turn"]
         self.turn_text = Text(self.w // 2, min(self.h // 8, 100), self.turn_names[0], size=40, color=(160, 160, 160))
-        self.roll_sum_viewer = Text(self.w // 2, self.h//2, "0", size=80, color="darkgoldenrod")
+        self.roll_sum_viewer = Text(self.w // 2, self.h//2, "0", size=80, color=(138, 134, 96))
 
         # end game text
         self.game_result_text = Text(self.w // 2, min(self.h // 8, 100), "You won", size=40, color=(180, 180, 180))
@@ -112,7 +107,6 @@ class Simulator():
             buttons.move_to(dx, dy)
 
         # 주사위 그림 이동
-        # self.dice_painter.move_to(dx, dy)
         self.dice_container.move_to(dx, dy)
 
         # score viewer 이동
@@ -159,22 +153,16 @@ class Simulator():
         self.score_viewer.update_score_viewer(self.env.get_hand_sums())
 
     def update_draw_dice(self, roll):
-        # self.dice_painter.change_content(roll)
-        # self.dice_painter.draw(self.display)
-        # pygame.display.update(self.dice_painter.get_rect())
         self.dice_container.change_content(roll)
         self.dice_container.call('draw', self.display)
         pygame.display.update(self.dice_container.call('get_rect'))
 
     def animate_roll(self,roll):
-        # self.dice_painter.roll_sound()
         self.dice_container.call('roll_sound')
         # animate only dice part (blit) : need to get rec to update blits
         frames = 10
         while frames>0:
             frames-=1
-            # self.dice_painter.draw_random_dice(self.display)
-            # pygame.display.update(self.dice_painter.get_rect())
             self.dice_container.call('draw_random_dice', self.display)
             pygame.display.update(self.dice_container.call('get_rect'))
             self.clock.tick(ANIMFPS)
@@ -183,7 +171,6 @@ class Simulator():
         self.update_draw_dice(roll)
         self.roll_sum_viewer.change_content(str(sum(roll)))
         self.roll_sum_viewer.write(self.display)
-        # pygame.display.update(self.dice_painter.get_rect()+[self.roll_sum_viewer.get_rect()])
         pygame.display.update(self.dice_container.call('get_rect') + [self.roll_sum_viewer.get_rect()])
         # short time sleep
         self.safe_sleep(0.7)
@@ -228,7 +215,6 @@ class Simulator():
         else:
             pass
 
-        # self.dice_painter.roll_sound()
         self.dice_container.call('roll_sound')
         meta_run = True
         while meta_run:
@@ -297,13 +283,11 @@ class Simulator():
                     return self.button_function(self.game_click_buttons, 'on_click', mousepos) # 아무것도 리턴하지 않아야 함
 
         self.display.fill(BLACK)
-
-
-        self.dice_container.call('highlight', mousepos, self.display)
+        if self.turn_text.get_content() == "Your turn": # only highlight when player turn
+            self.dice_container.call('highlight', mousepos, self.display)
 
         self.turn_text.write(self.display)
 
-        # self.dice_painter.draw(self.display)
         self.dice_container.call('draw', self.display)
         self.button_function(self.game_buttons, 'draw_button', self.display)
 

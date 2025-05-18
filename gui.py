@@ -289,6 +289,8 @@ class DiceContainer():
 
     def reset_dice(self):
         self.interaction_dict = {'Break':False, 'Freeze':False}
+        for dice in self.dice_list:
+            dice.reset_var()
 
     def get_dice(self):
         return self.dice_list
@@ -337,8 +339,14 @@ class DiceContainer():
             cnt+=1
 
     def interact_dice(self,point,env):
+        ability_used = False
         for dice in self.dice_list:
-            dice.interact(point,env,self.interaction_dict)
+            if dice.interact(point,env,self.interaction_dict):
+                ability_used = True
+
+        if ability_used:
+            for dice in self.dice_list:
+                dice.ability_used = True
 
     def move_to(self,dx,dy):
         # change my coord
@@ -366,10 +374,16 @@ class Dice():
         self.dice_image = None # current images to draw
         self.all_images = []
         self.highlight_img = None
+        self.highlight_text = None
         self.dice_index = dice_index
 
         self.dice_type = name
         self.initialize()
+
+        self.ability_used = False
+
+    def reset_var(self):
+        self.ability_used = False
 
     # initially download images
     def initialize(self,dice_num=1):
@@ -401,6 +415,7 @@ class Dice():
         self.highlight_img = h
 
         self.change_content(dice_num)
+        self.reset_var()
 
     def read_all_image_names(self):
         image_names = list(os.listdir(self.image_folder[1:]))
@@ -458,6 +473,9 @@ class Dice():
         h = self.highlight_img.get_rect()
         if h.collidepoint(mousepos):
             self.highlight_img.draw(screen)
+            if self.highlight_text and not self.ability_used:
+                self.highlight_text.change_pos(mousepos[0]+30,mousepos[1]-20)
+                self.highlight_text.write(screen)
 
     def break_sound(self):
         soundPlayer.play_sound_effect('break_wood')
@@ -478,6 +496,7 @@ class DarkDice(Dice):
 class WoodDice(Dice):
     def __init__(self, x, y, name, dice_index = 0, image_size = [50,50] ,move_ratio = [0.5,0.5]):
         super().__init__(x, y, name,dice_index = dice_index , image_size = image_size ,move_ratio = move_ratio)
+        self.highlight_text = Text(self.x,self.y, "Break", size=20, color=(138, 134, 96))
 
     def break_sound(self):
         soundPlayer.play_sound_effect('break_wood')
@@ -491,6 +510,7 @@ class WoodDice(Dice):
             env.subtract_player_hand(self.dice_index, self.get_dice_num())
             self.change_content(0) # break number to 0
             interaction_list['Break'] = True
+            return True
 
 class AquaDice(Dice):
     def __init__(self, x, y, name, dice_index = 0, image_size = [50,50] ,move_ratio = [0.5,0.5]):
@@ -514,6 +534,7 @@ class IceDice(Dice):
     def __init__(self, x, y, name, dice_index=0, image_size=[50, 50], move_ratio=[0.5, 0.5]):
         super().__init__(x, y, name, dice_index=dice_index, image_size=image_size, move_ratio=move_ratio)
         self.frozen = False
+        self.highlight_text = Text(self.x, self.y, "Freeze", size=20, color=(138, 134, 96))
 
     def break_sound(self):
         soundPlayer.play_sound_effect('tit')
@@ -530,6 +551,7 @@ class IceDice(Dice):
             interaction_list['Freeze'] = True
             env.set_freeze(self.dice_index)
             self.frozen = True
+            return True
 
     def draw_random_dice(self,screen):
         if self.frozen:
@@ -545,130 +567,3 @@ class IceDice(Dice):
 
     def end_random_roll(self):
         self.frozen = False
-
-'''
-Read all content in specified image_folder and draws content of the same name 
-'''
-class DicePainter():
-    def __init__(self, x, y, name, image_size = [50,50] , initiial_dice = [0,0],move_ratio = [0.5,0.5]):
-        self.x = x  # center coordinate
-        self.y = y  # center coordinate
-        self.image_size = image_size # fixed
-        self.move_ratio = move_ratio
-        self.name = name
-        self.image_folder = '/images/dice/'
-        self.image_names = list()
-        self.image_dict = [dict(),dict()]
-        self.dice_images = [] # current images to draw
-        self.all_images = [[],[]]
-        self.highlights = []
-
-        self.dice_type = ''#'ice'#''#'ice'
-        self.initialize(initiial_dice)
-
-    # initially download images
-    def initialize(self,dice_nums):
-        self.image_names = self.read_all_image_names()
-
-        for img_name in self.image_names: # save two dices
-            img = Image(self.x,self.y, "%s"%img_name ,folder = self.image_folder,size = self.image_size)
-            img.rot_center(-45)
-            img.move_image(-80,-20)
-            self.image_dict[0][img_name] = img
-            self.all_images[0].append(img)
-
-            img = Image(self.x,self.y, "%s"%img_name ,folder = self.image_folder,size = self.image_size)
-            img.rot_center(10)
-            img.move_image(20, 0)
-            self.image_dict[1][img_name] = img
-            self.all_images[1].append(img)
-
-        # highlights
-        h1 = Image(self.x, self.y, "highlight", folder=self.image_folder, size=self.image_size)
-        h1.rot_center(-45)
-        h1.move_image(-80, -20)
-        h2 = Image(self.x, self.y, "highlight", folder=self.image_folder, size=self.image_size)
-        h2.rot_center(10)
-        h2.move_image(20, 0)
-        self.highlights = [h1,h2]
-
-        self.change_content(dice_nums)
-
-    def read_all_image_names(self):
-        image_names = list(os.listdir(self.image_folder[1:]))
-        # remove '.png' part
-        image_names = [system_name[:-4] for system_name in image_names]
-        if self.dice_type == '': # only numbers from 0, 1 to 6 are remained
-            image_names = list(filter(lambda x:x in [str(i) for i in range(7)], image_names))
-        elif self.dice_type == 'ice':
-            image_names = list(filter(lambda x: x in ["ice"+str(i) for i in range(7)], image_names))
-            print(image_names)
-
-        # print(image_names)
-        return image_names
-
-    # draw if current content is not None
-    def draw(self,screen):
-        for dice_img in self.dice_images:
-            dice_img.draw(screen)
-
-    def draw_random_dice(self,screen):
-        random_dice = [random.choice(self.all_images[0]),random.choice(self.all_images[1])]
-        for dice_img in random_dice:
-            dice_img.draw(screen)
-
-    def move_to(self,dx,dy):
-        # change my coord
-        dx_motion = dx * self.move_ratio[0]
-        dy_motion = dy * self.move_ratio[1]
-        self.x += dx_motion
-        self.y += dy_motion
-        for img_name in self.image_names:
-            for i in range(len(self.image_dict)):
-                img_to_move = self.image_dict[i][img_name]
-                if img_to_move:
-                    img_to_move.move_image(dx_motion,dy_motion)
-
-        for h in self.highlights:
-            h.move_image(dx_motion,dy_motion)
-
-    # if it is in jacket name list, use it. Otherwise, leave as None
-    def change_content(self,dice_nums):
-        if dice_nums: # non empty
-            self.dice_images = [None,None]
-            for i in range(len(dice_nums)):
-                dice_num = str(dice_nums[i])
-                dice_name = self.dice_type + dice_num
-                if dice_name in self.image_names:
-                    self.dice_images[i] = self.image_dict[i][dice_name]
-        else:
-            self.dice_images = []
-                # print("no img named '{}' in the folder '{}'".format(content_name,self.image_folder) )
-
-    def check_point_inside(self,point):
-        collision = [dice.get_rect().collidepoint(point) for dice in self.dice_images]
-        return collision
-
-    def get_rect(self):
-        return [dice.get_rect() for dice in self.dice_images]
-
-    def get_dice_nums(self):
-        return [int(self.dice_images[i].filename[-1]) for i in range(2)]
-
-    def highlight(self,mousepos,screen):
-        for i in range(len(self.highlights)):
-            h = self.highlights[i].get_rect()
-            if h.collidepoint(mousepos):
-                self.highlights[i].draw(screen)
-
-    def break_sound(self):
-        if self.dice_type=='':
-            soundPlayer.play_sound_effect('break_wood')
-        elif self.dice_type=='ice':
-            soundPlayer.play_sound_effect('tit')
-
-    def roll_sound(self):
-        if self.dice_type=='':
-            soundPlayer.play_sound_effect('dice_roll')
-        elif self.dice_type=='ice':
-            soundPlayer.play_sound_effect('dice_roll_plastic')

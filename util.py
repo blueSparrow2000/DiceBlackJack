@@ -129,7 +129,6 @@ class Text():
 write center-alligned multiple line text 
 '''
 
-
 class MultiText():
     def __init__(self, x, y, content, size=20, color='darkturquoise', frames=100, content_per_line=10,
                  text_gap=5):  # color aqua

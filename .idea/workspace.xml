@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="Dice has image and its highlight, and its number is received from DBJ environment. Dice is contained in a dice container">
+    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="Added Random mode">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diceblackjack.py" beforeDir="false" afterPath="$PROJECT_DIR$/diceblackjack.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/freezing.mp3" beforeDir="false" afterPath="$PROJECT_DIR$/sound_effects/freezing.mp3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sound_effects/wood_sticks.mp3" beforeDir="false" afterPath="$PROJECT_DIR$/sound_effects/wood_sticks.mp3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,7 +186,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747563616856</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Added Random mode">
+      <option name="closed" value="true" />
+      <created>1747578917112</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1747578917112</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -218,6 +221,7 @@
     <MESSAGE value="- Changable mode: Normal and Breaker mode" />
     <MESSAGE value="Fixed bug: breaking dice on dealer's turn" />
     <MESSAGE value="Dice has image and its highlight, and its number is received from DBJ environment. Dice is contained in a dice container" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dice has image and its highlight, and its number is received from DBJ environment. Dice is contained in a dice container" />
+    <MESSAGE value="Added Random mode" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Random mode" />
   </component>
 </project>
