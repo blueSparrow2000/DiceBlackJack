@@ -25,7 +25,19 @@ class Simulator():
 
         self.dice_types = ['','dark','ice','wood','aqua','royal'] # TBU: paper, glass, vine, stone
         self.mode_idx = 0
-        self.mode_dict = {'Normal':'Normal dice blackjack', 'Break':"Can break 'one' die in a roll, once per game except the last round",'Freeze':"Can freeze a die to get guaranteed number next turn, once per game",'Guarded':"Your dice protects you against busting, for once" , 'Random':"Use random dice combinations and its abilities!" }#(royal dice)
+
+
+
+        self.mode_dict = Dice.ability_dict
+        self.mode_dict['Random'] = "Use random dice combinations and its abilities!"
+        self.mode_dict['Casual'] = "Win 10 times with 4 lives. Grants a die with random ability whenever you lose"
+        # {'Normal':'Normal dice blackjack',
+        #                   'Break':"Can break 'one' die in a roll, once per game except the last round",
+        #                   'Freeze':"Can freeze a die to get guaranteed number next turn, once per game",
+        #                   'Guard':"Your dice protects you against busting, for once" ,
+        #                   'Random':"Use random dice combinations and its abilities!" ,
+        #                   'Casual':"Win 10 times with 4 lives. Grants a die with random ability whenever you lose"}#(royal dice)
+
         self.modes = list(self.mode_dict.keys())
         self.current_mode = [self.modes[self.mode_idx]]
         self.dice_container_player = DiceContainer(self.w // 2, self.h // 2, 'Dice',dice_types=['',''],owner = 'Player')
@@ -229,7 +241,7 @@ class Simulator():
             self.dice_container_player.change_type(['wood' for i in range(2)])
         elif self.current_mode[0] == 'Normal':
             self.dice_container_player.change_type(['' for i in range(2)])
-        elif self.current_mode[0] == 'Guarded':
+        elif self.current_mode[0] == 'Guard':
             self.dice_container_player.change_type(['royal' for i in range(2)])
         elif self.current_mode[0] == 'Random':
             # self.dice_container_player.change_type(['dark' for i in range(2)])

@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="Fixed bug of wood dice (adding bug -&gt; subtraction)">
+    <list default="true" id="3b6702b2-0864-4243-b3c5-c11dceeead39" name="변경" comment="Now dealer's dice type is separate from the players (currently dealer does not use dice effects)&#10;Score viewer now takes bust into account">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diceblackjack.py" beforeDir="false" afterPath="$PROJECT_DIR$/diceblackjack.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_prompt_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_prompt_game.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,7 +219,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747582940942</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Now dealer's dice type is separate from the players (currently dealer does not use dice effects)&#10;Score viewer now takes bust into account">
+      <option name="closed" value="true" />
+      <created>1747658111689</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1747658111689</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -252,6 +258,7 @@
     <MESSAGE value="Optimization &amp; better highlight" />
     <MESSAGE value="Added Guarded mode" />
     <MESSAGE value="Fixed bug of wood dice (adding bug -&gt; subtraction)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed bug of wood dice (adding bug -&gt; subtraction)" />
+    <MESSAGE value="Now dealer's dice type is separate from the players (currently dealer does not use dice effects)&#10;Score viewer now takes bust into account" />
+    <option name="LAST_COMMIT_MESSAGE" value="Now dealer's dice type is separate from the players (currently dealer does not use dice effects)&#10;Score viewer now takes bust into account" />
   </component>
 </project>

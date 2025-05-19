@@ -362,7 +362,11 @@ class DiceContainer():
             dice.end_random_roll()
 
 class Dice():
-    def __init__(self, x, y, name, dice_index = 0, owner = '',image_size = [50,50] ,move_ratio = [0.5,0.5]):
+    ability_dict = {'Normal':'Normal dice blackjack',
+                      'Break':"Can break 'one' die in a roll, once per game except the last round",
+                      'Freeze':"Can freeze a die to get guaranteed number next turn, once per game",
+                      'Guard':"Your dice protects you against busting, for once" }
+    def __init__(self, x, y, name, ability = '',dice_index = 0, owner = '',image_size = [50,50] ,move_ratio = [0.5,0.5]):
         self.x = x  # center coordinate
         self.y = y  # center coordinate
         self.image_size = image_size # fixed
@@ -375,6 +379,13 @@ class Dice():
         self.all_images = []
         self.highlight_img = None
         self.highlight_text = None
+        self.explanation = None
+        self.ability = ability
+
+        if ability:
+            self.highlight_text = Text(self.x,self.y, self.ability, size=20, color=(138, 134, 96))
+            self.explanation = Text(self.x,self.y+100, Dice.ability_dict[self.ability] , size=17, color=(138, 134, 96))
+
         self.dice_index = dice_index
 
         self.dice_type = name
@@ -383,6 +394,7 @@ class Dice():
         self.ability_used = False
 
         self.owner = owner
+
 
     def reset_var(self,env):
         self.ability_used = False
@@ -449,6 +461,8 @@ class Dice():
                 img_to_move.move_image(dx_motion,dy_motion)
 
         self.highlight_img.move_image(dx_motion,dy_motion)
+        if self.ability:
+            self.explanation.change_pos(self.x, self.y+100)
 
     # if it is in jacket name list, use it. Otherwise, leave as None
     def change_content(self,dice_num):
@@ -477,6 +491,7 @@ class Dice():
             if self.highlight_text and not self.ability_used:
                 self.highlight_text.change_pos(mousepos[0]+30,mousepos[1]-20)
                 self.highlight_text.write(screen)
+                self.explanation.write(screen)
 
     def break_sound(self):
         soundPlayer.play_sound_effect('break_wood')
@@ -496,8 +511,8 @@ class DarkDice(Dice):
 
 class WoodDice(Dice):
     def __init__(self, x, y, name, dice_index = 0,owner = '', image_size = [50,50] ,move_ratio = [0.5,0.5]):
-        super().__init__(x, y, name,dice_index = dice_index ,owner=owner, image_size = image_size ,move_ratio = move_ratio)
-        self.highlight_text = Text(self.x,self.y, "Break", size=20, color=(138, 134, 96))
+        super().__init__(x, y, name,ability = 'Break',dice_index = dice_index ,owner=owner, image_size = image_size ,move_ratio = move_ratio)
+
 
     def break_sound(self):
         soundPlayer.play_sound_effect('break_wood')
@@ -527,7 +542,7 @@ class AquaDice(Dice):
 
 class RoyalDice(Dice):
     def __init__(self, x, y, name, dice_index = 0,owner = '', image_size = [50,50] ,move_ratio = [0.5,0.5]):
-        super().__init__(x, y, name,dice_index = dice_index ,owner=owner, image_size = image_size ,move_ratio = move_ratio)
+        super().__init__(x, y, name,ability = 'Guard',dice_index = dice_index ,owner=owner, image_size = image_size ,move_ratio = move_ratio)
     def break_sound(self):
         soundPlayer.play_sound_effect('ball_throw')
 
@@ -543,9 +558,8 @@ class RoyalDice(Dice):
 
 class IceDice(Dice):
     def __init__(self, x, y, name, dice_index=0,owner = '', image_size=[50, 50], move_ratio=[0.5, 0.5]):
-        super().__init__(x, y, name, dice_index=dice_index,owner=owner, image_size=image_size, move_ratio=move_ratio)
+        super().__init__(x, y, name, ability = 'Freeze',dice_index=dice_index,owner=owner, image_size=image_size, move_ratio=move_ratio)
         self.frozen = False
-        self.highlight_text = Text(self.x, self.y, "Freeze", size=20, color=(138, 134, 96))
 
     def break_sound(self):
         soundPlayer.play_sound_effect('tit')

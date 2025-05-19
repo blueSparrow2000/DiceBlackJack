@@ -82,12 +82,13 @@ This contributes to the house edge the most
 Dice have image and its highlight, and its number is received from DBJ environment     
 Dice are contained in a dice container      
 Freeze mode: You can freeze a die to get guaranteed number next turn, once per game     
-Guarded mode: Added royal dice that protects player against bust, for once
+Guard mode: Added royal dice that protects player against bust, for once
 Random mode: Use random dice combinations and its abilities!     
 Added aqua, dark, royal skin (their abilities are to be determined)          
 
 2025.05.19 Now dealer's dice type is separate from the players (currently dealer does not use dice effects)           
 Score viewer now takes bust into account         
+Casual mode: Win 10 times with 4 lives. Grants a die with random ability each time you lose
 
 
 TBU: 
