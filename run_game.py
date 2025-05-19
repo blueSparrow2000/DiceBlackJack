@@ -1,6 +1,6 @@
 from variables import *
 import pygame
-from gui import *
+from dice_class import *
 from util import *
 from diceblackjack import DBJ
 from time import sleep
@@ -24,13 +24,15 @@ class Simulator():
         pygame.display.set_caption('Dice BlackJack')
 
         self.dice_types = ['','dark','ice','wood','aqua','royal'] # TBU: paper, glass, vine, stone
+        self.casual_dices = ['ice','wood','royal']
         self.mode_idx = 0
 
-
-
-        self.mode_dict = Dice.ability_dict
+        self.mode_dict = dict()
+        self.mode_dict['Casual'] = "Win 10 times with 5 lives. Grants a die with random ability whenever you lose"
+        self.mode_dict.update(Dice.ability_dict)
         self.mode_dict['Random'] = "Use random dice combinations and its abilities!"
-        self.mode_dict['Casual'] = "Win 10 times with 4 lives. Grants a die with random ability whenever you lose"
+        self.mode_dict['Infinite'] = "How far can you go with just 5 lives? Grants a die with random ability whenever you lose"
+
         # {'Normal':'Normal dice blackjack',
         #                   'Break':"Can break 'one' die in a roll, once per game except the last round",
         #                   'Freeze':"Can freeze a die to get guaranteed number next turn, once per game",
@@ -50,6 +52,8 @@ class Simulator():
         self.transparent_screen.set_alpha(100)  # 0: transparent / 255: opaque
 
         self.score_viewer = ScoreViewer(7*self.w // 8, self.h // 2)
+        self.life_viewer = LifeViewer(20, 50)
+        self.wins_viewer = WinViewer(self.w - 80,60)
 
         self.clock = pygame.time.Clock()
 
@@ -63,14 +67,19 @@ class Simulator():
         self.main_click_buttons = [Button(self, 'quit', self.w//2, 7*self.h//8, 'quit', button_length=120,color = (60,60,60), hover_color = (100,100,100)),Button(self, 'game_screen', self.w//2, 3*self.h//4, 'play', button_length=120,color = (60,60,60), hover_color = (100,100,100))]
         self.main_toggle_buttons = [ToggleButton(self, 'toggle_mode', self.w//2, self.h//2 + 50, 'Mode',toggle_variable = self.current_mode, toggle_text_dict = self.mode_dict,button_length=120, text_size=17,color = (60,60,60), hover_color = (100,100,100),move_ratio=[0.5,0.5])]
 
+        self.get_click_buttons = [Button(self, 'discard', self.w//2, 7*self.h//8, 'discard', button_length=120,color = (80,80,80), hover_color = (120,120,120))]
+        self.get_toggle_buttons = []
+
+        self.get_buttons = self.get_click_buttons + self.get_toggle_buttons
         self.main_buttons = self.main_click_buttons + self.main_toggle_buttons
         self.game_buttons = self.game_click_buttons + self.game_toggle_buttons
         self.end_buttons = self.end_click_buttons + self.end_toggle_buttons
-        self.all_buttons = self.main_buttons + self.game_buttons + self.end_buttons
+        self.all_buttons = self.main_buttons + self.game_buttons + self.end_buttons + self.get_buttons
 
         ########## game variables ##########
         self.game_end = False
         self.win = False
+        self.new_get_dice = None
 
         # main text
         self.game_name =  Text(self.w // 2, min(self.h // 8, 100), "Dice Black Jack", size=40, color=(160, 160, 160))
@@ -83,6 +92,9 @@ class Simulator():
         # end game text
         self.game_result_text = Text(self.w // 2, min(self.h // 8, 100), "You won", size=40, color=(180, 180, 180))
         self.replay_text = Text(self.w // 2, 3*self.h // 4, "Replay?", size=28, color=(150, 150, 150))
+
+        # get dice text
+        self.get_dice_text = Text(self.w // 2, self.h//5, "Click to replace a die", size=25, color=(180, 180, 180))
 
         # put all pause screen rects here! this includes interactable things like buttons! -> extract rects!
         self.end_screen_rects = [self.game_result_text.get_rect(),self.replay_text.get_rect()] # this is used to efficiently draw on pause screen
@@ -125,9 +137,13 @@ class Simulator():
         # 주사위 그림 이동
         self.dice_container_player.move_to(dx, dy)
         self.dice_container_dealer.move_to(dx, dy)
+        self.life_viewer.move_to(dx, dy)
+        if self.new_get_dice:
+            self.new_get_dice.move_to(dx, dy)
 
         # score viewer 이동
         self.score_viewer.change_pos(7 * self.w // 8, self.h // 2)
+        self.wins_viewer.change_pos(self.w - 40,20)
 
         # 모든 텍스트 상자 이동
         self.turn_text.change_pos(self.w // 2, min(self.h // 8, 100))
@@ -135,6 +151,7 @@ class Simulator():
         self.replay_text.change_pos(self.w // 2, 3 * self.h // 4)
         self.game_name.change_pos(self.w // 2, min(self.h // 8, 100))
         self.roll_sum_viewer.change_pos(self.w // 2, self.h//2)
+        self.get_dice_text.change_pos(self.w // 2, self.h//5)
 
         # rect getters update
         self.end_screen_rects = [self.game_result_text.get_rect(),
@@ -182,6 +199,9 @@ class Simulator():
         pygame.display.update(self.current_dice_container.call('get_rect'))
 
     def animate_roll(self,roll,burst_protected = False):
+        self.life_viewer.draw(self.display)
+        self.wins_viewer.write(self.display)
+
         self.current_dice_container.call('roll_sound')
         # animate only dice part (blit) : need to get rec to update blits
         frames = 10
@@ -215,6 +235,10 @@ class Simulator():
         if done:
             self.game_end = True
 
+    def discard(self):
+        self.new_get_dice = None
+        return True #end getting it
+
     def yes(self):
         return True
 
@@ -246,6 +270,20 @@ class Simulator():
         elif self.current_mode[0] == 'Random':
             # self.dice_container_player.change_type(['dark' for i in range(2)])
             self.dice_container_player.change_type([random.choice(self.dice_types) for i in range(2)])
+        elif self.current_mode[0] == 'Casual':
+            self.life_viewer.reset(turn_on=True)
+            self.wins_viewer.reset(turn_on=True)  # target wins 가 not None 일때만 카운트를 올리자  무한모드 간편하게 만들 수 있다
+            self.casual_screen(target_wins = 10)
+            self.life_viewer.reset(turn_on=False)
+            self.wins_viewer.reset(turn_on=False)  # target wins 가 not None 일때만 카운트를 올리자  무한모드 간편하게 만들 수 있다
+            return True
+        elif self.current_mode[0] == 'Infinite':
+            self.life_viewer.reset(turn_on=True)
+            self.wins_viewer.reset(turn_on=True)  # target wins 가 not None 일때만 카운트를 올리자  무한모드 간편하게 만들 수 있다
+            self.casual_screen()
+            self.life_viewer.reset(turn_on=False)
+            self.wins_viewer.reset(turn_on=False)  # target wins 가 not None 일때만 카운트를 올리자  무한모드 간편하게 만들 수 있다
+            return True
         else:
             pass
 
@@ -327,6 +365,9 @@ class Simulator():
 
         self.score_viewer.write(self.display)
 
+        self.life_viewer.draw(self.display)
+        self.wins_viewer.write(self.display)
+
         pygame.display.flip()
         self.clock.tick(FPS)
 
@@ -384,12 +425,155 @@ class Simulator():
             # pygame.event.pump() # in case update does not work properly
             self.clock.tick(SLOWFPS)
 
+    def dice_get_screen(self): # animate frame 을 카피해옴
+        mousepos = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.WINDOWRESIZED:
+                self.resize_window_updates()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # esc 키를 누르면 메인 화면으로
+                    return False
+            if event.type == pygame.MOUSEMOTION:
+                mousepos = pygame.mouse.get_pos()
+                self.button_function(self.get_buttons, 'hover_check', mousepos)
+
+            if event.type == pygame.MOUSEBUTTONUP:  # 마우스를 뗼떼 실행됨
+                mousepos = pygame.mouse.get_pos()
+                self.interact_dice(mousepos)
+                if self.button_function(self.get_click_buttons, 'check_inside_button', mousepos):
+                    return self.button_function(self.get_click_buttons, 'on_click', mousepos)  # end
+                # 주사위를 클릭시 실행! - click to replace a die! # player의 dice에 대해서만!
+                player_dice = self.dice_container_player.get_dice()
+                for i in range(2):
+                    die = player_dice[i]
+                    if die.check_point_inside(mousepos): # clicked! => must be changed
+                        self.new_get_dice.break_sound()
+                        self.dice_container_player.change_die_type(i, self.new_get_dice.name) # name is type
+                        self.new_get_dice = None
+                        return True # end
+
+        self.display.fill(BLACK)
+
+        self.dice_container_player.call('highlight', mousepos, self.display)
+
+        self.game_result_text.write(self.display)
+        self.get_dice_text.write(self.display)
+
+        self.dice_container_player.call('draw', self.display)
+        self.button_function(self.get_buttons, 'draw_button', self.display)
+
+        # draw a new dice to replace!
+        # highlight도 하도록!
+        self.new_get_dice.draw(self.display)
+        self.new_get_dice.highlight(mousepos, self.display)
+
+        pygame.display.flip()
+        self.clock.tick(FPS)
+
+
+    def casual_screen(self,target_wins = None):
+        meta_run = True
+        while meta_run:
+            self.button_function(self.game_toggle_buttons, 'initialize')
+            self.initialize_game()
+
+            normal_game_end = True
+            # player turn
+            self.turn_text.change_content(self.turn_names[0])
+            while not self.game_end:
+                quit = self.animate_frame()
+                if quit:
+                    normal_game_end = False
+                    meta_run = False
+                    break
+
+            if normal_game_end:
+                if not self.env.player_burst():# dealer turn -> if not player burst
+                    # draw initial dealer's dice
+                    self.turn_text.change_content(self.turn_names[1])
+                    self.set_dealer_turn()
+                    self.update_draw_dice(self.env.dealer_initial_roll)
+                    self.animate_frame(click_available = False)
+                    self.safe_sleep(1.4)
+                    # dealer step
+                    done = False
+                    while not done:
+                        self.animate_frame(click_available = False)
+                        roll, done, _ = self.env.dealer_step()
+                        self.game_end_check(done)
+                        if roll:
+                            self.animate_roll(roll)
+                        self.score_viewer.update_score_viewer(self.env.get_observation())
+
+                # after game end
+                pygame.mixer.pause()
+                self.turn_text.change_content("")
+                self.animate_frame(click_available = False) # redraw
+                
+                ###### 분기
+                reward = self.env.get_reward()
+                # verify winner
+                if reward > 0:
+                    # player win
+                    self.game_result_text.change_content("You won")
+                    soundPlayer.play_sound_effect('confirm')
+
+                    # go to the next game immediately
+                    # Win display
+                    self.game_result_text.write(self.display)
+                    pygame.display.update(self.game_result_text.get_rect())
+                    self.safe_sleep(1)
+                    if target_wins:
+                        self.wins_viewer.add_count()
+                        if self.wins_viewer.check_win_condition(target_wins):
+                            # Final Win display
+                            print("You won the Casual mode")
+                            return
+
+                elif reward == 0:
+                    # tie =>
+                    self.game_result_text.change_content("Tie")
+                    soundPlayer.play_sound_effect('shruff')
+                    # go to the next game immediately
+                    # Tie display
+                    self.game_result_text.write(self.display)
+                    pygame.display.update(self.game_result_text.get_rect())
+                    self.safe_sleep(1)
+                else:
+                    # player lost
+                    self.game_result_text.change_content("You lost")
+                    soundPlayer.play_sound_effect('thmb')
+
+                    # lost display
+                    self.game_result_text.write(self.display)
+                    pygame.display.update(self.game_result_text.get_rect())
+                    self.safe_sleep(1)
+
+                    # modify life
+                    self.life_viewer.decrease_life()
+                    if self.life_viewer.check_game_over():
+                        meta_run = False # if life == 0
+                        # lost game display
+                        print("You lost the Casual mode")
+                        return
+                    random_new_dice = random.choice(self.casual_dices)
+                    self.new_get_dice = self.dice_container_player.get_new_die(0,random_new_dice, x_loc = self.w//2 + 50, y_loc = self.h//4, owner = None) # determined on casual mode, right before running get dice# randomly get a new dice
+
+                    # get a new dice
+                    while self.new_get_dice:
+                        self.dice_get_screen()
+
+                pygame.mixer.unpause()
+        return True
+
+
 
     def main_screen(self): # 1 -> pause screen과 유사 토글로 맵 종류 바꾸기
         self.button_function(self.main_toggle_buttons, 'initialize')
-
         while 1:
-
             # collect user input
             events = pygame.event.get()
             keys = pygame.key.get_pressed()  # 꾹 누르고 있으면 계속 실행되는 것들 # SHOULD BE CALLED AFTER pygame.event.get()!

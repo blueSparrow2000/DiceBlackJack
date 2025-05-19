@@ -234,10 +234,43 @@ class ScoreViewer():
         self.dealer_score.change_content(str(dealer_score))
 
 
+class WinViewer():
+    def __init__(self, x, y,size=20, color=(120,120,120),light_color=(160,160,160), frames=100):  # color aqua
+        self.x = int(x)
+        self.y = int(y)
+        self.frames = frames
+        self.size = size
+        self.color = color
+        self.light_color = light_color
 
+        self.wins = 0
 
+        self.win_text = Text(self.x,self.y, "Wins: {}".format(self.wins), self.size, self.color,
+             self.frames,bold = True)
 
+        self.turn_on = False
 
+    def reset(self, turn_on = False):
+        self.wins = 0
+        self.win_text.change_content("Wins: {}".format(self.wins))
+        self.turn_on = turn_on
+
+    def add_count(self):
+        self.wins += 1
+        self.win_text.change_content("Wins: {}".format(self.wins))
+
+    def change_pos(self, x, y):
+        self.x = int(x)
+        self.y = int(y)
+        self.win_text.change_pos(self.x,self.y)
+
+    def write(self, screen):
+        if self.turn_on:
+            self.win_text.write(screen)
+
+    def check_win_condition(self, target):
+        if self.wins >= target:
+            return True
 
 
 '''

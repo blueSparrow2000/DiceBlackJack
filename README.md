@@ -88,7 +88,8 @@ Added aqua, dark, royal skin (their abilities are to be determined)
 
 2025.05.19 Now dealer's dice type is separate from the players (currently dealer does not use dice effects)           
 Score viewer now takes bust into account         
-Casual mode: Win 10 times with 4 lives. Grants a die with random ability each time you lose
+Casual mode: Win 10 times with 5 lives. Grants a die with random ability each time you lose
+Infinite mode: (Not tested) How far can you go with 5 lives? Grants a die with random ability each time you lose
 
 
 TBU: 
