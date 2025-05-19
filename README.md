@@ -4,6 +4,12 @@ A simple double dice black jack environment used for Reinforcement Learning
 
 - a simple graphic is included
 
+## rule
+Player and dealer rolls 2d6 simultaneously. Both can see each other's dice                  
+Player rolls 2d6 until one wants to stop              
+Then, dealer rolls the dice until sum is greater than or equal to the player's sum            
+One must get closer to 21 but not above to win        
+
 ## Installations
 This project is based on python. Below are the packages that needs to be installed:
 
@@ -18,8 +24,10 @@ scipy
 
 - In game       
 <img src="./sample_run/in_game.png" width="300" height="300" align="center">  
+
 - End screen       
 <img src="./sample_run/result.png" width="300" height="300" align="center">
+
 - Monte carlo plot        
 
 Shows state value function with respect to each restricted policy     
@@ -67,17 +75,19 @@ TBU: RL agent
 2025.05.17 Graphic is now available      
 Added wood, ice dice skin       
 Breaker mode: Game Twist. You can break 'one' die in a roll, once per game except the last round => then what's the winning strategy?      
-This twist is acceptable since the player always goes first, having a possibility of getting 'burst' which is an instant lost    
+This twist is acceptable since the player always goes first, having a possibility of getting 'bust' which is an instant lost    
 This contributes to the house edge the most
 
 2025.05.18 Fixed bug: breaking dice on dealer's turn     
 Dice have image and its highlight, and its number is received from DBJ environment     
 Dice are contained in a dice container      
 Freeze mode: You can freeze a die to get guaranteed number next turn, once per game     
-Guarded mode: Added royal dice that protects player against burst, for once
+Guarded mode: Added royal dice that protects player against bust, for once
 Random mode: Use random dice combinations and its abilities!     
 Added aqua, dark, royal skin (their abilities are to be determined)          
 
+2025.05.19 Now dealer's dice type is separate from the players (currently dealer does not use dice effects)           
+Score viewer now takes bust into account         
 
 
 TBU: 

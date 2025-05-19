@@ -88,8 +88,7 @@ class Text():
         self.font = pygame.font.SysFont('arial', size, self.bold)
         self.text = self.font.render(self.content, True, self.color)
         # text.set_alpha(127)
-        self.textRect = self.text.get_rect()
-        self.textRect.center = (self.x, self.y)
+        self.textRect = self.text.get_rect(center=(self.x, self.y))
 
         self.text_width = self.text.get_width()
         self.text_height = self.text.get_height()
@@ -111,9 +110,9 @@ class Text():
 
         self.content = content
         self.text = self.font.render(self.content, True, new_color)
+        # self.textRect = self.text.get_rect(center=(self.x, self.y))
         self.textRect = self.text.get_rect()
         self.textRect.center = (self.x, self.y)
-        # self.textRect.center = (self.x, self.y)
 
     def write(self, screen):
         screen.blit(self.text, self.textRect)
@@ -188,14 +187,18 @@ class ScoreViewer():
         self.dealer_text = Text(self.text_locations[3][0],self.text_locations[3][1], "dealer", self.size, self.color,
              self.frames,bold = True)
 
+        self.viewer_background = pygame.Rect(0, 0, 50, 100)
+        self.viewer_background.center = (self.x, self.y)
+        self.background_color = (0,0,0)#(138, 134, 96) #
+
         # string alligning process
         self.content_blocks = [self.player_text,self.player_score,self.dealer_score,self.dealer_text]
 
     def get_rect(self):
-        return [block.get_rect() for block in self.content_blocks]
-
+        return [block.get_rect() for block in self.content_blocks] + [self.viewer_background]
 
     def write(self, screen):
+        pygame.draw.rect(screen, self.background_color, self.viewer_background)
         for text_box in self.content_blocks:
             text_box.write(screen)
 
@@ -208,6 +211,7 @@ class ScoreViewer():
             content = self.content_blocks[i]
             content.change_pos(self.text_locations[i][0],self.text_locations[i][1])
 
+        self.viewer_background.center = (self.x, self.y)
 
     def update_score_viewer_color(self, current_turn=""):
         if current_turn == "player":  # change highlight color
@@ -220,11 +224,15 @@ class ScoreViewer():
             self.player_text.change_color(self.color)
             self.dealer_text.change_color(self.color)
 
-    def update_score_viewer(self,observation):
+    def update_score_viewer(self,observation, burst_check = False):
         player_score, dealer_score = observation
+        if burst_check:
+            player_score = player_score if player_score<=21 else 0 # burst check
+            dealer_score = dealer_score if dealer_score<=21 else 0 # burst check
 
         self.player_score.change_content(str(player_score))
         self.dealer_score.change_content(str(dealer_score))
+
 
 
 

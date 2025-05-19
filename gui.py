@@ -89,7 +89,7 @@ class ToggleButton(Button):
 
         if self.toggle_text_dict:
             self.explain_text_offset = [0 , self.text_size*3//2]
-            self.text_explanation = Text(self.x+self.explain_text_offset[0], self.y + self.explain_text_offset[1], self.get_explanation(), size=15, color='gray')
+            self.text_explanation = Text(self.x+self.explain_text_offset[0], self.y + self.explain_text_offset[1], self.get_explanation(), size=17, color='gray')
             self.text_explanation_rect = pygame.Rect((self.x -button_length//2 + self.explain_text_offset[0],self.y-button_height//2 + self.explain_text_offset[1]),(button_length,button_height))
 
 
@@ -275,13 +275,13 @@ class Selector():
 
 
 class DiceContainer():
-    def __init__(self, x, y, name, dice_types=['',''], image_size = [50,50] ,move_ratio = [0.5,0.5]):
+    def __init__(self, x, y, name, dice_types=['',''],owner = '', image_size = [62,62] ,move_ratio = [0.5,0.5]):
         self.x = x  # center coordinate
         self.y = y  # center coordinate
         self.image_size = image_size # fixed
         self.move_ratio = move_ratio
         self.name = name
-
+        self.owner = owner
         self.interaction_dict = {'Break':False, 'Freeze':False}
 
         self.dice_list = []
@@ -315,20 +315,20 @@ class DiceContainer():
         for dice_type in new_type_list:
             dice = None
             if dice_type=='ice':
-                dice = IceDice(self.x, self.y, dice_type,dice_index=cnt, image_size = self.image_size ,move_ratio = self.move_ratio)
+                dice = IceDice(self.x, self.y, dice_type,owner = self.owner,dice_index=cnt, image_size = self.image_size ,move_ratio = self.move_ratio)
             elif dice_type=='wood':
-                dice = WoodDice(self.x, self.y, dice_type,dice_index=cnt, image_size = self.image_size ,move_ratio = self.move_ratio)
+                dice = WoodDice(self.x, self.y, dice_type,owner = self.owner,dice_index=cnt, image_size = self.image_size ,move_ratio = self.move_ratio)
             elif dice_type=='dark':
-                dice = DarkDice(self.x, self.y, dice_type, dice_index=cnt, image_size=self.image_size,
+                dice = DarkDice(self.x, self.y, dice_type, owner = self.owner,dice_index=cnt, image_size=self.image_size,
                                 move_ratio=self.move_ratio)
             elif dice_type == 'aqua':
-                dice = AquaDice(self.x, self.y, dice_type, dice_index=cnt, image_size=self.image_size,
+                dice = AquaDice(self.x, self.y, dice_type, owner = self.owner,dice_index=cnt, image_size=self.image_size,
                                 move_ratio=self.move_ratio)
             elif dice_type == 'royal':
-                dice = RoyalDice(self.x, self.y, dice_type, dice_index=cnt, image_size=self.image_size,
+                dice = RoyalDice(self.x, self.y, dice_type, owner = self.owner,dice_index=cnt, image_size=self.image_size,
                                 move_ratio=self.move_ratio)
             else:
-                dice = Dice(self.x, self.y, dice_type,dice_index=cnt, image_size = self.image_size ,move_ratio = self.move_ratio)
+                dice = Dice(self.x, self.y, dice_type,owner = self.owner,dice_index=cnt, image_size = self.image_size ,move_ratio = self.move_ratio)
             self.dice_list.append(dice)
             cnt+=1
 
@@ -362,7 +362,7 @@ class DiceContainer():
             dice.end_random_roll()
 
 class Dice():
-    def __init__(self, x, y, name, dice_index = 0, image_size = [50,50] ,move_ratio = [0.5,0.5]):
+    def __init__(self, x, y, name, dice_index = 0, owner = '',image_size = [50,50] ,move_ratio = [0.5,0.5]):
         self.x = x  # center coordinate
         self.y = y  # center coordinate
         self.image_size = image_size # fixed
@@ -382,6 +382,8 @@ class Dice():
 
         self.ability_used = False
 
+        self.owner = owner
+
     def reset_var(self,env):
         self.ability_used = False
 
@@ -393,7 +395,7 @@ class Dice():
             img = Image(self.x,self.y, "%s"%img_name ,folder = self.image_folder,size = self.image_size)
             if self.dice_index==0:
                 img.rot_center(-45)
-                img.move_image(-80,-20)
+                img.move_image(-100,-20)
             elif self.dice_index==1:
                 img.rot_center(10)
                 img.move_image(20, 0)
@@ -406,7 +408,7 @@ class Dice():
         h = Image(self.x, self.y, "highlight", folder=self.image_folder, size=self.image_size)
         if self.dice_index == 0:
             h.rot_center(-45)
-            h.move_image(-80, -20)
+            h.move_image(-100, -20)
         elif self.dice_index == 1:
             h.rot_center(10)
             h.move_image(20, 0)
@@ -489,12 +491,12 @@ class Dice():
         pass
 
 class DarkDice(Dice):
-    def __init__(self, x, y, name, dice_index = 0, image_size = [50,50] ,move_ratio = [0.5,0.5]):
-        super().__init__(x, y, name,dice_index = dice_index , image_size = image_size ,move_ratio = move_ratio)
+    def __init__(self, x, y, name, dice_index = 0,owner = '', image_size = [50,50] ,move_ratio = [0.5,0.5]):
+        super().__init__(x, y, name,dice_index = dice_index ,owner=owner, image_size = image_size ,move_ratio = move_ratio)
 
 class WoodDice(Dice):
-    def __init__(self, x, y, name, dice_index = 0, image_size = [50,50] ,move_ratio = [0.5,0.5]):
-        super().__init__(x, y, name,dice_index = dice_index , image_size = image_size ,move_ratio = move_ratio)
+    def __init__(self, x, y, name, dice_index = 0,owner = '', image_size = [50,50] ,move_ratio = [0.5,0.5]):
+        super().__init__(x, y, name,dice_index = dice_index ,owner=owner, image_size = image_size ,move_ratio = move_ratio)
         self.highlight_text = Text(self.x,self.y, "Break", size=20, color=(138, 134, 96))
 
     def break_sound(self):
@@ -506,14 +508,17 @@ class WoodDice(Dice):
     def interact(self,point,env,interaction_list):
         if self.check_point_inside(point) and not interaction_list['Break']:#
             self.break_sound()
-            env.subtract_player_hand( self.get_dice_num())
+            if self.owner == 'Player':
+                env.add_player_hand( -self.get_dice_num())
+            else:
+                env.add_dealer_hand(-self.get_dice_num())
             self.change_content(0) # break number to 0
             interaction_list['Break'] = True
             return True
 
 class AquaDice(Dice):
-    def __init__(self, x, y, name, dice_index = 0, image_size = [50,50] ,move_ratio = [0.5,0.5]):
-        super().__init__(x, y, name,dice_index = dice_index , image_size = image_size ,move_ratio = move_ratio)
+    def __init__(self, x, y, name, dice_index = 0,owner = '', image_size = [50,50] ,move_ratio = [0.5,0.5]):
+        super().__init__(x, y, name,dice_index = dice_index ,owner=owner, image_size = image_size ,move_ratio = move_ratio)
     def break_sound(self):
         soundPlayer.play_sound_effect('water')
 
@@ -521,8 +526,8 @@ class AquaDice(Dice):
         soundPlayer.play_sound_effect('snow_break')
 
 class RoyalDice(Dice):
-    def __init__(self, x, y, name, dice_index = 0, image_size = [50,50] ,move_ratio = [0.5,0.5]):
-        super().__init__(x, y, name,dice_index = dice_index , image_size = image_size ,move_ratio = move_ratio)
+    def __init__(self, x, y, name, dice_index = 0,owner = '', image_size = [50,50] ,move_ratio = [0.5,0.5]):
+        super().__init__(x, y, name,dice_index = dice_index ,owner=owner, image_size = image_size ,move_ratio = move_ratio)
     def break_sound(self):
         soundPlayer.play_sound_effect('ball_throw')
 
@@ -531,12 +536,14 @@ class RoyalDice(Dice):
 
     def reset_var(self,env):
         self.ability_used = False
-        env.set_player_protection()
+        if self.owner == 'Player':
+            env.set_player_protection()
+        # no protection for the dealer!
 
 
 class IceDice(Dice):
-    def __init__(self, x, y, name, dice_index=0, image_size=[50, 50], move_ratio=[0.5, 0.5]):
-        super().__init__(x, y, name, dice_index=dice_index, image_size=image_size, move_ratio=move_ratio)
+    def __init__(self, x, y, name, dice_index=0,owner = '', image_size=[50, 50], move_ratio=[0.5, 0.5]):
+        super().__init__(x, y, name, dice_index=dice_index,owner=owner, image_size=image_size, move_ratio=move_ratio)
         self.frozen = False
         self.highlight_text = Text(self.x, self.y, "Freeze", size=20, color=(138, 134, 96))
 

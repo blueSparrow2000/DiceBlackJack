@@ -12,7 +12,7 @@ font = pygame.font.SysFont('arial', 25)
 # pygame stuff
 
 class Simulator():
-    def __init__(self,w=400,h=400):
+    def __init__(self,w=500,h=500):
         self.env = DBJ() # get the environment!
         self.env.set_verbose()
 
@@ -23,12 +23,14 @@ class Simulator():
                                                pygame.RESIZABLE | pygame.SRCALPHA)  # pygame.display.set_mode((self.w, self.h), pygame.SRCALPHA)
         pygame.display.set_caption('Dice BlackJack')
 
-        self.dice_types = ['','dark','ice','wood','aqua','royal'] # TBU: aqua, paper
+        self.dice_types = ['','dark','ice','wood','aqua','royal'] # TBU: paper, glass, vine, stone
         self.mode_idx = 0
-        self.mode_dict = {'Normal':'Normal dice blackjack', 'Break':"Can break 'one' die in a roll, once per game except the last round",'Freeze':"Can freeze a die to get guaranteed number next turn, once per game",'Guarded':"Your dice protects you against burst, for once" , 'Random':"Use random dice combinations and its abilities!" }#(royal dice)
+        self.mode_dict = {'Normal':'Normal dice blackjack', 'Break':"Can break 'one' die in a roll, once per game except the last round",'Freeze':"Can freeze a die to get guaranteed number next turn, once per game",'Guarded':"Your dice protects you against busting, for once" , 'Random':"Use random dice combinations and its abilities!" }#(royal dice)
         self.modes = list(self.mode_dict.keys())
         self.current_mode = [self.modes[self.mode_idx]]
-        self.dice_container = DiceContainer(self.w // 2, self.h // 2, 'Dice',dice_types=['',''])
+        self.dice_container_player = DiceContainer(self.w // 2, self.h // 2, 'Dice',dice_types=['',''],owner = 'Player')
+        self.dice_container_dealer = DiceContainer(self.w // 2, self.h // 2, 'Dice', dice_types=['dark', 'dark'],owner = 'Dealer') #
+        self.current_dice_container = self.dice_container_player
 
         # trace option
         self.transparent_screen = pygame.Surface((self.w, self.h))
@@ -83,13 +85,16 @@ class Simulator():
         self.current_mode[0] = self.modes[self.mode_idx]
 
     def initialize_game(self):
+        self.current_dice_container = self.dice_container_player
         self.env.reset()
         self.update_draw_dice(self.env.player_hand)
         self.score_viewer.update_score_viewer(self.env.get_hand_sums())
         self.game_end = False
         self.win = False
 
-        self.dice_container.reset_dice(self.env)
+        self.dice_container_player.reset_dice(self.env)
+        self.dice_container_dealer.reset_dice(self.env)
+
 
     def resize_window_updates(self):
         old_w, old_h = self.w, self.h
@@ -106,7 +111,8 @@ class Simulator():
             buttons.move_to(dx, dy)
 
         # 주사위 그림 이동
-        self.dice_container.move_to(dx, dy)
+        self.dice_container_player.move_to(dx, dy)
+        self.dice_container_dealer.move_to(dx, dy)
 
         # score viewer 이동
         self.score_viewer.change_pos(7 * self.w // 8, self.h // 2)
@@ -117,6 +123,13 @@ class Simulator():
         self.replay_text.change_pos(self.w // 2, 3 * self.h // 4)
         self.game_name.change_pos(self.w // 2, min(self.h // 8, 100))
         self.roll_sum_viewer.change_pos(self.w // 2, self.h//2)
+
+        # rect getters update
+        self.end_screen_rects = [self.game_result_text.get_rect(),
+                                 self.replay_text.get_rect()]  # this is used to efficiently draw on pause screen
+        for end_button in self.end_buttons+self.end_toggle_buttons:
+            for item in end_button.get_all_rect():
+                self.end_screen_rects.insert(0, item)
 
     def button_function(self, button_list, function_name, *args):
         flag = None # false가 아닌 값이 하나라도 있다면 그 값을 리턴(무작위라 보면 됨. 버튼 순서에 따라 달라져서. 마지막 버튼의 리턴이 우선 - 근데 버튼은 안겹쳐 한번에 하나만 선택가능임)
@@ -143,39 +156,41 @@ class Simulator():
         roll, done, burst_protected = self.env.player_step(1)
         self.game_end_check(done)
         self.animate_roll(roll,burst_protected = burst_protected)
-        self.score_viewer.update_score_viewer(self.env.get_hand_sums())
+        self.score_viewer.update_score_viewer(self.env.get_observation())
 
     def stand(self):
         #action = 0
         roll, done, _ = self.env.player_step(0)
         self.game_end_check(done)
-        self.score_viewer.update_score_viewer(self.env.get_hand_sums())
+        self.score_viewer.update_score_viewer(self.env.get_observation())
 
     def update_draw_dice(self, roll):
-        self.dice_container.change_content(roll)
-        self.dice_container.call('draw', self.display)
-        pygame.display.update(self.dice_container.call('get_rect'))
+        self.current_dice_container.change_content(roll)
+        self.current_dice_container.call('draw', self.display)
+        pygame.display.update(self.current_dice_container.call('get_rect'))
 
     def animate_roll(self,roll,burst_protected = False):
-        self.dice_container.call('roll_sound')
+        self.current_dice_container.call('roll_sound')
         # animate only dice part (blit) : need to get rec to update blits
         frames = 10
         while frames>0:
             frames-=1
-            self.dice_container.call('draw_random_dice', self.display)
-            pygame.display.update(self.dice_container.call('get_rect'))
+            self.current_dice_container.call('draw_random_dice', self.display)
+            pygame.display.update(self.current_dice_container.call('get_rect'))
             self.clock.tick(ANIMFPS)
-        self.dice_container.end_random_roll()
+        self.current_dice_container.end_random_roll()
         # assign text shower to show what number appeared
         self.update_draw_dice(roll)
         if burst_protected:
             soundPlayer.play_sound_effect('metal')
-            self.roll_sum_viewer.change_content("Burst Protected!")
+            self.roll_sum_viewer.change_content("Bust Protected!")
             self.roll_sum_viewer.write(self.display)
         else:
             self.roll_sum_viewer.change_content(str(sum(roll)))
             self.roll_sum_viewer.write(self.display)
-        pygame.display.update(self.dice_container.call('get_rect') + [self.roll_sum_viewer.get_rect()])
+        self.score_viewer.update_score_viewer(self.env.get_hand_sums())
+        self.score_viewer.write(self.display)
+        pygame.display.update(self.current_dice_container.call('get_rect') + [self.roll_sum_viewer.get_rect()] + self.score_viewer.get_rect())
         # short time sleep
         self.safe_sleep(0.7)
 
@@ -199,29 +214,30 @@ class Simulator():
         return False  # force quit
 
     def interact_dice(self, mousepos):
-        self.dice_container.interact_dice(mousepos,self.env)
+        self.current_dice_container.interact_dice(mousepos,self.env)
         self.score_viewer.update_score_viewer(self.env.get_hand_sums())
 
     def set_dealer_turn(self):
         self.env.set_dealer_turn()
-        self.dice_container.end_random_roll()
+        self.dice_container_player.end_random_roll()
+        self.current_dice_container = self.dice_container_dealer # change to dealers container
 
     def game_screen(self): # 2
         if self.current_mode[0] == 'Freeze':
-            self.dice_container.change_type(['ice' for i in range(2)])
+            self.dice_container_player.change_type(['ice' for i in range(2)])
         elif self.current_mode[0] == 'Break':
-            self.dice_container.change_type(['wood' for i in range(2)])
+            self.dice_container_player.change_type(['wood' for i in range(2)])
         elif self.current_mode[0] == 'Normal':
-            self.dice_container.change_type(['' for i in range(2)])
+            self.dice_container_player.change_type(['' for i in range(2)])
         elif self.current_mode[0] == 'Guarded':
-            self.dice_container.change_type(['royal' for i in range(2)])
+            self.dice_container_player.change_type(['royal' for i in range(2)])
         elif self.current_mode[0] == 'Random':
-            # self.dice_container.change_type(['dark' for i in range(2)])
-            self.dice_container.change_type([random.choice(self.dice_types) for i in range(2)])
+            # self.dice_container_player.change_type(['dark' for i in range(2)])
+            self.dice_container_player.change_type([random.choice(self.dice_types) for i in range(2)])
         else:
             pass
 
-        self.dice_container.call('roll_sound')
+        self.dice_container_player.call('roll_sound')
         meta_run = True
         while meta_run:
             self.button_function(self.game_toggle_buttons, 'initialize')
@@ -255,7 +271,7 @@ class Simulator():
                         self.game_end_check(done)
                         if roll:
                             self.animate_roll(roll)
-                        self.score_viewer.update_score_viewer(self.env.get_hand_sums())
+                        self.score_viewer.update_score_viewer(self.env.get_observation())
 
                 # after game end
                 pygame.mixer.pause()
@@ -290,11 +306,11 @@ class Simulator():
 
         self.display.fill(BLACK)
         if self.turn_text.get_content() == "Your turn": # only highlight when player turn
-            self.dice_container.call('highlight', mousepos, self.display)
+            self.current_dice_container.call('highlight', mousepos, self.display)
 
         self.turn_text.write(self.display)
 
-        self.dice_container.call('draw', self.display)
+        self.current_dice_container.call('draw', self.display)
         self.button_function(self.game_buttons, 'draw_button', self.display)
 
         self.score_viewer.write(self.display)

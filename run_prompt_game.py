@@ -12,7 +12,8 @@ def prompt_game(env):
         print("Initial roll")
         print("Dealer: {:2d} | Player: {:2d}".format(env.get_dealer_hand(),
                                                      env.get_player_hand()))
-        while True:
+        run_episode = True
+        while run_episode:
             ##### get input = action #####
             get_input = True
             action = 0
@@ -30,6 +31,8 @@ def prompt_game(env):
                 elif x=='q' or x=='':
                     run = False
                     get_input = False
+                    run_episode = False
+                    break
                 else:
                     print("invalid argument! Please type 's'/'0' for stand, 'h'/'1' for hit")
             ##### get input = action #####

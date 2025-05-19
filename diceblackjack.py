@@ -92,11 +92,19 @@ class DBJ():
             print()
         return reward
 
-    def subtract_player_hand(self, amount):
+    def add_player_hand(self, amount):
         # player hand is a list of history of dice values
-        self.player_hand.append(-amount)
+        self.player_hand.append(amount)
         if self.verbose:
-            print("subtracted {:2d} from player hand!".format(amount))
+            print("Added {:2d} from player hand!".format(amount))
+            print("Dealer: {:2d} | Player: {:2d}".format(self.sum_hand(self.dealer_hand),
+                                                               self.sum_hand(self.player_hand)))
+
+    def add_dealer_hand(self, amount):
+        # player hand is a list of history of dice values
+        self.dealer_hand.append(amount)
+        if self.verbose:
+            print("Added {:2d} from player hand!".format(amount))
             print("Dealer: {:2d} | Player: {:2d}".format(self.sum_hand(self.dealer_hand),
                                                                self.sum_hand(self.player_hand)))
 
@@ -209,7 +217,7 @@ class DBJ():
 
     def get_dealer_action(self): # 나중에 NN으로부터 딜러 액션을 가져올수도 있다
         stop_dealer_hit_threshold = self.sum_hand(self.player_hand)
-        return self.sum_hand(self.dealer_hand) < stop_dealer_hit_threshold
+        return (self.sum_hand(self.dealer_hand) < stop_dealer_hit_threshold) or (self.sum_hand(self.dealer_hand) <= 9) # smaller than 9, always hit!
 
     def dealer_step(self):
         done = False
